@@ -1,0 +1,22 @@
+<header class="app-header">
+  <div class="logo">
+    <img src="will_add_later.png" alt="Logo" />
+  </div>
+  <div class="right-corner">
+    <button *ngIf="!isSignedIn" (click)="signIn()">Log In</button>
+    <button (click)="toggleUiTheme()">Toggle UI theme</button>
+    <div class="language-switcher">
+      <button (click)="toggleDropdown()">
+        {{ Intl.currentLanguage }}
+      </button>
+      <ul *ngIf="Intl.isDropdownOpen">
+        <li
+          *ngFor="let lang of Intl.languages"
+          (click)="switchLanguage(lang.value)"
+        >
+          {{ lang.title }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
