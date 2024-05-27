@@ -43,9 +43,12 @@ export class NearApiService {
     this.modal.show();
   }
 
-  signOut() {
-    this.wallet.signOut();
-    this.wallet = this.accountId = null;
+  async signOut() {
+    if (this.selector) {
+      this.wallet = await this.selector.wallet();
+      this.wallet.signOut();
+      this.wallet = this.accountId = null;
+    }
   }
 
   isUserSignedIn(): boolean {
