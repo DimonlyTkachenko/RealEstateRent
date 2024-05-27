@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { ThemeService } from '../../services/theme.service';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, MatToolbarModule, MatButtonModule],
+  imports: [CommonModule, MatToolbarModule, MatButtonModule, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
@@ -34,8 +35,11 @@ export class HeaderComponent {
     this.realEstateService.signIn();
   }
   signOut() {
-    this.realEstateService.signOut();
-    this.isSignedIn = false;
+    const isToSignOut = confirm('You really want to sign out?');
+    if (isToSignOut) {
+      this.realEstateService.signOut();
+      this.isSignedIn = false;
+    }
   }
 
   toggleUiTheme() {

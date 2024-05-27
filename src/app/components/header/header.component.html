@@ -3,9 +3,9 @@
   <span class="spacer"></span>
   <button *ngIf="!isSignedIn" mat-button (click)="signIn()">Sign in</button>
   <div *ngIf="isSignedIn">
-    <button mat-button routerLink="/all-properties">All Properties</button>
-    <button mat-button routerLink="/my-properties">My Properties</button>
-    <button mat-button routerLink="/my-bookings">My Bookings</button>
+    <button mat-button routerLink="all-properties">All Properties</button>
+    <button mat-button routerLink="my-properties">My Properties</button>
+    <button mat-button routerLink="my-bookings">My Bookings</button>
     <button mat-button (click)="signOut()">Sign out</button>
   </div>
 </mat-toolbar>
