@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { RealEstateService } from '../../services/real-estate.service';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ThemeService } from '../../services/theme.service';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { RealEstateService } from '../../services/real-estate.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -14,20 +14,25 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
+  private realEstateService = inject(RealEstateService);
+  private themeService = inject(ThemeService);
+  private router = inject(Router);
+
   isInitialized = false;
   isSignedIn: boolean;
 
-  constructor(
-    private realEstateService: RealEstateService,
-    private themeService: ThemeService
-  ) {}
+  constructor() {}
 
   ngOnInit(): void {
+    /*
+      As initialization comes from Near service, we need to wait for it to finish
+      and only then get info about user login
+    */
     this.realEstateService.isInitialized$.subscribe((initialized) => {
       this.isInitialized = initialized;
-      if (initialized) {
-        this.isSignedIn = this.realEstateService.isUserSignedIn();
-      }
+    });
+    this.realEstateService.isSignedIn$.subscribe((isSignedIn) => {
+      this.isSignedIn = isSignedIn;
     });
   }
 
@@ -38,7 +43,6 @@ export class HeaderComponent {
     const isToSignOut = confirm('You really want to sign out?');
     if (isToSignOut) {
       this.realEstateService.signOut();
-      this.isSignedIn = false;
     }
   }
 

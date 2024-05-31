@@ -1,1 +1,5 @@
-<p>user-properties-list works!</p>
+<button *ngIf="isSignedIn" mat-button routerLink="create-property">Create new property</button>
+<div *ngIf="!isSignedIn">Hey, plese sign in first!</div>
+<br>
+<p>list is expected below</p>
+<router-outlet></router-outlet>
