@@ -52,7 +52,7 @@ export class RealEstateService {
 
   createNewProperty(object: { [prop: string]: any }): void {
     const accountId = this.nearApiService.accountId;
-    const args = { owner: accountId, ...object };
+    const args = { owner: accountId, images: ['https://assetsio.gnwcdn.com/minecraft-house-ideas-ultimate-survival-house.jpg?width=1200&height=1200&fit=bounds&quality=70&format=jpg&auto=webp','https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3aNajCX-5IbukJHMI8AGDGrkXwClXnmzhgA&usqp=CAU'], ...object };
 
     console.log('@createNewProperty: ' + JSON.stringify(args));
 

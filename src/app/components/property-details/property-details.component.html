@@ -1,0 +1,57 @@
+<div class="property-details-container" *ngIf="property">
+  <h1>{{ property.title }}</h1>
+  <div class="carousel-container">
+    <c-carousel class="carousel-inner">
+      <c-carousel-indicators></c-carousel-indicators>
+      <c-carousel-inner *ngIf="slides">
+        <c-carousel-item *ngFor="let slide of slides">
+          <img [src]="slide.src" alt="{{ slide.title }}" class="d-block w-100" loading="lazy" />
+        </c-carousel-item>
+      </c-carousel-inner>
+      <c-carousel-control caption="Previous" direction="prev"></c-carousel-control>
+      <c-carousel-control caption="Next" direction="next"></c-carousel-control>
+    </c-carousel>
+  </div>
+  <div class="property-description">
+    <h2>Description</h2>
+    <p>{{ property.description }}</p>
+  </div>
+
+  <div class="property-location">
+    <h3>Location</h3>
+    <p>{{ property.location }}</p>
+  </div>
+
+  <div class="property-type">
+    <h3>Type</h3>
+    <p>{{ property.type }}</p>
+  </div>
+
+  <div class="property-options">
+    <h3>Options</h3>
+    <div *ngFor="let option of property.options" class="option">
+      {{ option }}
+    </div>
+  </div>
+
+  <div class="booking-form">
+    <h3>Book this property</h3>
+    <form (ngSubmit)="onBook()">
+      <mat-form-field appearance="fill">
+        <mat-label>Check In</mat-label>
+        <input matInput [matDatepicker]="checkInPicker" [(ngModel)]="booking.checkIn" name="checkIn" required />
+        <mat-datepicker-toggle matSuffix [for]="checkInPicker"></mat-datepicker-toggle>
+        <mat-datepicker #checkInPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Check Out</mat-label>
+        <input matInput [matDatepicker]="checkOutPicker" [(ngModel)]="booking.checkOut" name="checkOut" required />
+        <mat-datepicker-toggle matSuffix [for]="checkOutPicker"></mat-datepicker-toggle>
+        <mat-datepicker #checkOutPicker></mat-datepicker>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit">Book</button>
+    </form>
+  </div>
+</div>
