@@ -8,7 +8,7 @@ import { PropertyListComponent } from '../property-list/property-list.component'
   standalone: true,
   imports: [PropertyListComponent, CommonModule],
   templateUrl: './all-properties.component.html',
-  styleUrl: './all-properties.component.scss'
+  styleUrl: './all-properties.component.scss',
 })
 export class AllPropertiesComponent {
   properties: any[];
@@ -16,7 +16,8 @@ export class AllPropertiesComponent {
   constructor(private realEstateService: RealEstateService) {}
 
   ngOnInit(): void {
-    this.realEstateService.getAllProperties().subscribe(data => {
+    this.realEstateService.getAllProperties().subscribe((data) => {
+      console.log(data);
       this.properties = data;
     });
   }

@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate {
   }
 
   canActivate(): boolean {
-    if (this.isSignedIn) {
+    if (this.realEstateService.isUserSignedIn()) {
       return true;
     } else {
       // show ui modal

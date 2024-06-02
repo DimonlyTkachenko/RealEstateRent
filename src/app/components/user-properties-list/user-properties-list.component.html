@@ -2,4 +2,18 @@
 <div *ngIf="!isSignedIn">Hey, plese sign in first!</div>
 <br>
 <p>list is expected below</p>
+<div *ngFor="let property of userProperties">
+    <div>
+        <img
+          [src]="property.images[0]"
+          height="116px"
+          width="116px"
+          alt="Property Image"
+        />
+        <h2>{{ property.title }}</h2>
+        <p>{{ property.description }}</p>
+      </div>
+      <button>delete!</button>
+  </div>
+  
 <router-outlet></router-outlet>

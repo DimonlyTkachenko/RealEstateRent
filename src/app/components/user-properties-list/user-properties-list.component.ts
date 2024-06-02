@@ -12,6 +12,7 @@ import { RealEstateService } from '../../services/real-estate.service';
 })
 export class UserPropertiesListComponent {
   private realEstateService = inject(RealEstateService);
+  userProperties: any[];
   isInitialized = false;
   isSignedIn: boolean;
 
@@ -21,6 +22,10 @@ export class UserPropertiesListComponent {
     });
     this.realEstateService.isSignedIn$.subscribe((isSignedIn) => {
       this.isSignedIn = isSignedIn;
+    });
+    this.realEstateService.getUserProperties().subscribe((data) => {
+      console.log(data);
+      this.userProperties = data;
     });
   }
 }

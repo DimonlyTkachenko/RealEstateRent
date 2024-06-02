@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { NearApiService } from './near-api.service';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { NearApiService, CONTRACT_ID } from './near-api.service';
+import { BehaviorSubject, Observable, from } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -40,25 +40,31 @@ export class RealEstateService {
     window.location.reload();
   }
 
-  isUserSignedIn(): void {
+  isUserSignedIn(): boolean {
     const isSignedIn = this.nearApiService.isUserSignedIn();
     this.isSignedInSubject.next(isSignedIn);
+    return isSignedIn;
   }
 
-  // for now add mock data
   getAllProperties(): Observable<any[]> {
-    return of([
-      {
-        title: 'test property1',
-        description: 'some long description to test property',
-        images: ['https://t4.ftcdn.net/jpg/01/23/68/71/360_F_123687102_3rPakqjpruQ7hV0yImMYcSYBXGkTCwE5.jpg'],
-      },
-      {
-        title: 'test property2',
-        description: 'some long description to test property',
-        images: ['https://t4.ftcdn.net/jpg/01/23/68/71/360_F_123687102_3rPakqjpruQ7hV0yImMYcSYBXGkTCwE5.jpg'],
-      },
-    ]);
+    return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getAllAvailableProperties'));
   }
+
+  createNewProperty(object: { [prop: string]: any }): void {
+    const accountId = this.nearApiService.accountId;
+    console.log(JSON.stringify({ owner: accountId, ...object }));
+ //   debugger;
+    this.nearApiService.callMethod({
+      contractId: CONTRACT_ID,
+      method: 'addProperty',
+      args: { owner: accountId, ...object },
+    });
+  }
+
+  getUserProperties(): Observable<any[]> {
+    const accountId = this.nearApiService.accountId;
+    return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getPropertiesByAccount', { accountId }));
+  }
+
   getPropertyById(id: string) {}
 }

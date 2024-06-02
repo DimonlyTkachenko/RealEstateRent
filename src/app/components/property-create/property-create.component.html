@@ -11,18 +11,18 @@
 
   <mat-form-field appearance="fill">
     <mat-label>Price</mat-label>
-    <input matInput type="number" [(ngModel)]="property.price" name="price" required />
+    <input matInput type="number" [(ngModel)]="property.price" name="price" />
   </mat-form-field>
 
   <mat-form-field appearance="fill">
     <mat-label>Location</mat-label>
-    <input matInput [(ngModel)]="property.location" name="location" required />
+    <input matInput [(ngModel)]="property.location" name="location" />
   </mat-form-field>
 
-  <mat-form-field appearance="fill">
+  <!-- <mat-form-field appearance="fill">
     <mat-label>Rooms</mat-label>
-    <input matInput type="number" [(ngModel)]="property.rooms" name="rooms" required />
-  </mat-form-field>
+    <input matInput type="number" [(ngModel)]="property.rooms" name="rooms" />
+  </mat-form-field> -->
 
   <button mat-raised-button color="primary" type="submit">Add Apartment</button>
 </form>
