@@ -16,8 +16,8 @@ export class AuthGuard implements CanActivate {
     });
   }
 
-  canActivate(): boolean {
-    if (this.realEstateService.isUserSignedIn()) {
+  async canActivate(): Promise<boolean> {
+    if (await this.realEstateService.isUserSignedIn()) {
       return true;
     } else {
       // show ui modal

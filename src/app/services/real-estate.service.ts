@@ -40,8 +40,8 @@ export class RealEstateService {
     window.location.reload();
   }
 
-  isUserSignedIn(): boolean {
-    const isSignedIn = this.nearApiService.isUserSignedIn();
+  async isUserSignedIn(): Promise<boolean> {
+    const isSignedIn = await this.nearApiService.isUserSignedIn();
     this.isSignedInSubject.next(isSignedIn);
     return isSignedIn;
   }
@@ -52,13 +52,15 @@ export class RealEstateService {
 
   createNewProperty(object: { [prop: string]: any }): void {
     const accountId = this.nearApiService.accountId;
-    console.log(JSON.stringify({ owner: accountId, ...object }));
- //   debugger;
+    console.log('@createNewProperty: ' + JSON.stringify({ owner: accountId, ...object }));
+    //   debugger;
     this.nearApiService.callMethod({
       contractId: CONTRACT_ID,
       method: 'addProperty',
       args: { owner: accountId, ...object },
     });
+
+    //http://localhost:4200/my-properties/create-property?transactionHashes=7afnpaj32kUGmGzbNxhjcid5vfbMBvZA72qv6qSQwfGx
   }
 
   getUserProperties(): Observable<any[]> {

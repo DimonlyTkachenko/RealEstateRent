@@ -20,6 +20,7 @@ class RealEstateNear {
   @view({})
   getAllAvailableProperties(): Property[] {
     const allProperties = this.getAllProperties();
+    // TODO to revert back filter by 'isAvailable'
     return allProperties.length ? allProperties : [];
   }
 

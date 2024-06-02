@@ -32,6 +32,7 @@ export class NearApiService {
   wallet: Wallet;
   modal: WalletSelectorModal;
   accountId: string;
+  account: AccountState;
 
   constructor() {
     this.initializeNearLogin();
@@ -62,18 +63,25 @@ export class NearApiService {
     }
   }
 
-  isUserSignedIn(): boolean {
+  async isUserSignedIn(): Promise<boolean> {
+    if (!this.isInitializedSubject.getValue()) {
+      await this.initializeNearLogin();
+    }
     const isSignedIn = this.selector.isSignedIn();
     this.isSignedInSubject.next(isSignedIn);
     return isSignedIn;
   }
 
   async initializeNearLogin() {
-    debug('near login ui init..');
+    const isInitialized = this.isInitializedSubject.getValue();
+    debug('near login ui init, initialized: ' + isInitialized);
+    if (isInitialized) {
+      return;
+    }
     const _selector = await setupWalletSelector({
       network: 'testnet',
       modules: [setupMyNearWallet()],
-      debug: true
+      debug: true,
     });
 
     const _modal = setupModal(_selector, {
@@ -82,6 +90,7 @@ export class NearApiService {
     const state = _selector.store.getState();
 
     this.accounts = state.accounts;
+    this.account = state.accounts.find((account) => account.active) || null;
     this.accountId = state.accounts.find((account) => account.active)?.accountId || null;
 
     window.selector = _selector;
@@ -139,10 +148,14 @@ export class NearApiService {
         },
       ],
     });
-    console.log('heer')
-    debugger
+    console.log('heer');
+    debugger;
     return result ? providers.getTransactionLastResult(result) : null;
   }
+
+  // async callFunction(){
+  //   this.account.
+  // }
 }
 
 function debug(title: string, obj?: any, isStringify = false): void {
