@@ -1,4 +1,4 @@
-import { NearBindgen, near, call, view, UnorderedMap, Vector, AccountId, initialize } from 'near-sdk-js';
+import { NearBindgen, near, call, view, UnorderedMap, AccountId } from 'near-sdk-js';
 import { Property } from './property';
 import { User } from './user';
 import { Booking } from './booking';
@@ -22,6 +22,11 @@ class RealEstateNear {
     const allProperties = this.getAllProperties();
     // TODO to revert back filter by 'isAvailable'
     return allProperties.length ? allProperties : [];
+  }
+
+  @view({})
+  getPropertyById({ id }): Property {
+    return id ? this.internalGetPropertyById(id) : ({} as Property);
   }
 
   @view({})
@@ -58,6 +63,7 @@ class RealEstateNear {
 
       const { result, msg } = Property.validateProperty(object);
       const callerAccount: AccountId = near.predecessorAccountId();
+
       if (result) {
         // check if caller is the owner
         if (callerAccount !== object?.owner) {
@@ -67,7 +73,9 @@ class RealEstateNear {
           newId,
           object?.title,
           object?.description,
+          object?.type,
           object?.location,
+          object?.options,
           object?.owner,
           BigInt(object?.price || 0),
           object?.images,
@@ -78,14 +86,14 @@ class RealEstateNear {
         this.properties.set(newId, newProperty);
 
         // update user
-        const user = this.createUserIfNotExist(callerAccount);
+        const user: User = this.createUserIfNotExist(callerAccount);
         // push new property
-        user.addProperty(newProperty.id);
+        User.addProperty(user, newProperty.id);
       } else {
         return { status: 'ERROR2', error: msg };
       }
     } catch (e) {
-      return { status: 'ERROR3', error: e.toString() };
+      return { status: 'ERROR3', error: e.msg + ' @ ' + e.stack };
     }
     near.log('gas: ' + near.usedGas());
     return { status: 'CREATED', error: 'no errors it is success!' };
@@ -97,7 +105,7 @@ class RealEstateNear {
     try {
       const { result, msg } = Property.validateProperty(object);
 
-      const existingProperty = this.getPropertyById(object?.id);
+      const existingProperty = this.internalGetPropertyById(object?.id);
       const callerAccount: AccountId = near.predecessorAccountId();
       if (result) {
         // check if caller is the owner
@@ -127,7 +135,7 @@ class RealEstateNear {
     near.log(`@deleteProperty: ${JSON.stringify(object)}`);
     try {
       const callerAccount: AccountId = near.predecessorAccountId();
-      const existingProperty = this.getPropertyById(object?.id);
+      const existingProperty = this.internalGetPropertyById(object?.id);
 
       // check if caller is the owner
       if (callerAccount !== object?.owner) {
@@ -137,7 +145,7 @@ class RealEstateNear {
       const user = this.users.get(callerAccount);
 
       this.properties.remove(existingProperty.id);
-      user.removeProperty(existingProperty.id);
+      User.removeProperty(user, existingProperty.id);
     } catch (e) {
       return { status: 'ERROR', error: e.toString() };
     }
@@ -146,7 +154,8 @@ class RealEstateNear {
   }
 
   createUserIfNotExist(accountId: string): User {
-    let user = this.users.get(accountId);
+    let user: User = this.users.get(accountId);
+
     if (!user) {
       const userNewId = this.generateId(this.users);
       user = new User(userNewId, accountId);
@@ -160,7 +169,7 @@ class RealEstateNear {
     return allProperties.isEmpty() ? [] : allProperties.toArray().map(([, property]) => property);
   }
 
-  getPropertyById(id: string): Property {
+  internalGetPropertyById(id: string): Property {
     return this.properties.get(id);
   }
 
@@ -170,6 +179,6 @@ class RealEstateNear {
    * @returns string id
    */
   generateId(map: UnorderedMap<any>): string {
-    return map.isEmpty() ? '1' : map.length + 1 + '1';
+    return map.isEmpty() ? '1' : (map.length + 1).toString();
   }
 }

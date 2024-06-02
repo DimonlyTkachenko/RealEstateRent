@@ -4,7 +4,9 @@ export class Property {
   id: string;
   title: string;
   description: string;
+  type: string;
   location: string;
+  options: string[];
   owner: string; // ref to account creator
   price: BigInt;
   images: string[];
@@ -16,7 +18,9 @@ export class Property {
     id: string,
     title: string,
     description: string = '',
+    type: string = '',
     location: string = 'not specified',
+    options: string[],
     owner: string, // Near account
     price: BigInt = BigInt(0),
     images: string[] = [], // only urls
@@ -25,7 +29,9 @@ export class Property {
     this.id = id;
     this.title = title;
     this.description = description;
+    this.type = type;
     this.location = location;
+    this.options = options;
     this.owner = owner;
     this.price = price;
     this.isAvailable = isAvailable;
@@ -47,4 +53,12 @@ export class Property {
     }
     return { result: !msg, msg };
   }
+}
+
+enum PropertyType {
+  house = 'House',
+  apartment = 'Apartment',
+  flat = 'Flat',
+  land = 'Land',
+  office = 'Office',
 }

@@ -8,11 +8,8 @@ import { AuthGuard } from './auth.guard';
 export const routes: Routes = [
   { path: '', redirectTo: 'all-properties', pathMatch: 'full' },
   { path: 'all-properties', component: AllPropertiesComponent },
-  {
-    path: 'my-properties',
-    component: UserPropertiesListComponent,
-    canActivate: [AuthGuard],
-    children: [{ path: 'create-property', component: PropertyCreateComponent, canActivate: [AuthGuard] }],
-  },
+  { path: 'my-properties', component: UserPropertiesListComponent, canActivate: [AuthGuard] },
+  { path: 'create-property', component: PropertyCreateComponent, canActivate: [AuthGuard] },
+  { path: 'create-property/:id', component: PropertyCreateComponent, canActivate: [AuthGuard] },
   { path: 'my-bookings', component: UserBookingsListComponent, canActivate: [AuthGuard] },
 ];

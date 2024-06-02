@@ -6,11 +6,22 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCardModule } from '@angular/material/card';
+import { Property } from '../../entities/property';
 
 @Component({
   selector: 'app-property-create',
   standalone: true,
-  imports: [ImageUploadComponent, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  imports: [
+    ImageUploadComponent,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+  ],
   templateUrl: './property-create.component.html',
   styleUrl: './property-create.component.scss',
 })
@@ -25,9 +36,13 @@ export class PropertyCreateComponent {
     if (propertyId) {
       this.isEditMode = true;
       console.log('edit mode enabled for property: ' + propertyId);
-      // this.realEstateService.getPropertyById(propertyId).subscribe(data => {
-      //   this.property = data;
-      // });
+      this.realEstateService.getPropertyById(propertyId).subscribe((data) => {
+        const property = data as Property;
+        if (property.options && typeof property.options == 'object') {
+          property.options = property.options.join(',');
+        }
+        this.property = data;
+      });
     }
   }
 
@@ -36,17 +51,24 @@ export class PropertyCreateComponent {
   }
 
   onSubmit() {
-    if (this.property.title && this.property.description) {
-      console.log(
-        'creating new property, title: ' + this.property.title + '. description: ' + this.property.description
-      );
-      this.realEstateService.createNewProperty({
-        title: this.property.title,
-        description: this.property.description,
-        images: [
-          'https://media.istockphoto.com/id/1026205392/photo/beautiful-luxury-home-exterior-at-twilight.jpg?s=612x612&w=0&k=20&c=HOCqYY0noIVxnp5uQf1MJJEVpsH_d4WtVQ6-OwVoeDo=',
-        ],
-      });
+    if (
+      this.property.title &&
+      this.property.description &&
+      this.property.type &&
+      this.property.location &&
+      this.property.price
+    ) {
+      if (this.isEditMode) {
+        this.realEstateService.updateProperty(this.property);
+        //.subscribe(() => {
+        // this.router.navigate(['/properties']);
+        // });
+      } else {
+        this.realEstateService.createNewProperty(this.property);
+        // .subscribe(() => {
+        //   this.router.navigate(['/properties']);
+        // });
+      }
     } else {
       console.error('Form is invalid');
     }

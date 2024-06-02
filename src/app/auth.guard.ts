@@ -7,17 +7,13 @@ import { RealEstateService } from './services/real-estate.service';
 })
 export class AuthGuard implements CanActivate {
   private realEstateService = inject(RealEstateService);
-  private router = inject(Router);
-  private isSignedIn: boolean;
 
-  constructor() {
-    this.realEstateService.isSignedIn$.subscribe((isSignedIn) => {
-      this.isSignedIn = isSignedIn;
-    });
-  }
+  constructor() {}
 
   async canActivate(): Promise<boolean> {
-    if (await this.realEstateService.isUserSignedIn()) {
+    const isLoggedIn = await this.realEstateService.isUserSignedIn();
+    //console.log('@Authguard: ' + isLoggedIn);
+    if (isLoggedIn) {
       return true;
     } else {
       // show ui modal

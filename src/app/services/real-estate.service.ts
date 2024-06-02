@@ -52,12 +52,29 @@ export class RealEstateService {
 
   createNewProperty(object: { [prop: string]: any }): void {
     const accountId = this.nearApiService.accountId;
-    console.log('@createNewProperty: ' + JSON.stringify({ owner: accountId, ...object }));
-    //   debugger;
+    const args = { owner: accountId, ...object };
+
+    console.log('@createNewProperty: ' + JSON.stringify(args));
+
     this.nearApiService.callMethod({
       contractId: CONTRACT_ID,
       method: 'addProperty',
-      args: { owner: accountId, ...object },
+      args,
+    });
+
+    //http://localhost:4200/my-properties/create-property?transactionHashes=7afnpaj32kUGmGzbNxhjcid5vfbMBvZA72qv6qSQwfGx
+  }
+
+  updateProperty(object: { [prop: string]: any }): void {
+    const accountId = this.nearApiService.accountId;
+    const args = { owner: accountId, ...object };
+
+    console.log('@updateProperty: ' + JSON.stringify(args));
+
+    this.nearApiService.callMethod({
+      contractId: CONTRACT_ID,
+      method: 'updateProperty',
+      args,
     });
 
     //http://localhost:4200/my-properties/create-property?transactionHashes=7afnpaj32kUGmGzbNxhjcid5vfbMBvZA72qv6qSQwfGx
@@ -67,6 +84,20 @@ export class RealEstateService {
     const accountId = this.nearApiService.accountId;
     return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getPropertiesByAccount', { accountId }));
   }
+  deleteProperty(object: { [prop: string]: any }): void {
+    const accountId = this.nearApiService.accountId;
+    const args = { owner: accountId, ...object };
 
-  getPropertyById(id: string) {}
+    console.log('@deleteProperty: ' + JSON.stringify(args));
+
+    this.nearApiService.callMethod({
+      contractId: CONTRACT_ID,
+      method: 'deleteProperty',
+      args,
+    });
+  }
+
+  getPropertyById(id: string): Observable<object> {
+    return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getPropertyById', { id }));
+  }
 }

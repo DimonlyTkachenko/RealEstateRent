@@ -1,28 +1,46 @@
-<form (ngSubmit)="onSubmit()">
-  <mat-form-field appearance="fill">
-    <mat-label>Title</mat-label>
-    <input matInput [(ngModel)]="property.title" name="title" required />
-  </mat-form-field>
+<div class="container">
+  <mat-card class="property-form-card">
+    <form (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="fill">
+        <mat-label>Title</mat-label>
+        <input matInput [(ngModel)]="property.title" name="title" required />
+      </mat-form-field>
 
-  <mat-form-field appearance="fill">
-    <mat-label>Description</mat-label>
-    <textarea matInput [(ngModel)]="property.description" name="description" required></textarea>
-  </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Description</mat-label>
+        <textarea matInput [(ngModel)]="property.description" name="description" required></textarea>
+      </mat-form-field>
 
-  <mat-form-field appearance="fill">
-    <mat-label>Price</mat-label>
-    <input matInput type="number" [(ngModel)]="property.price" name="price" />
-  </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Type</mat-label>
+        <input matInput [(ngModel)]="property.type" name="type" required />
+      </mat-form-field>
 
-  <mat-form-field appearance="fill">
-    <mat-label>Location</mat-label>
-    <input matInput [(ngModel)]="property.location" name="location" />
-  </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Location</mat-label>
+        <input matInput [(ngModel)]="property.location" name="location" required />
+      </mat-form-field>
 
-  <!-- <mat-form-field appearance="fill">
-    <mat-label>Rooms</mat-label>
-    <input matInput type="number" [(ngModel)]="property.rooms" name="rooms" />
-  </mat-form-field> -->
+      <mat-form-field appearance="fill">
+        <mat-label>Options</mat-label>
+        <input matInput [(ngModel)]="property.options" name="options" placeholder="wifi,breakfast,TV..." />
+      </mat-form-field>
 
-  <button mat-raised-button color="primary" type="submit">Add Apartment</button>
-</form>
+      <mat-form-field appearance="fill">
+        <mat-label>Price</mat-label>
+        <input matInput type="number" [(ngModel)]="property.price" name="price" required />
+      </mat-form-field>
+
+      <mat-checkbox [(ngModel)]="property.isAvailable" name="isAvailable">
+        Available for booking
+      </mat-checkbox>
+
+      <app-image-upload></app-image-upload>
+      <!-- (imagesUploaded)="handleImagesUploaded($event)" -->
+
+      <button mat-raised-button color="primary" type="submit">
+        {{ isEditMode ? 'Update Property' : 'Add Property' }}
+      </button>
+    </form>
+  </mat-card>
+</div>

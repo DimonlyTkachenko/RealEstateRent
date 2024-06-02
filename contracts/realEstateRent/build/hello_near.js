@@ -869,34 +869,35 @@ class User {
     this.bookings = [];
     this.properties = [];
   }
-  addProperty(propertyId) {
-    if (!this.properties.includes(propertyId)) {
-      this.properties.push(propertyId);
+  // static methods are used because Near storage contains serialized plain JS objects without functions
+  static addProperty(user, propertyId) {
+    if (!user.properties.includes(propertyId)) {
+      user.properties.push(propertyId);
     }
   }
-  removeProperty(propertyId) {
-    const index = this.properties.indexOf(propertyId);
+  static removeProperty(user, propertyId) {
+    const index = user.properties.indexOf(propertyId);
     if (index != -1) {
-      this.properties.splice(index, 1);
+      user.properties.splice(index, 1);
     }
   }
-  addBooking(bookingId) {
-    if (!this.bookings.includes(bookingId)) {
-      this.bookings.push(bookingId);
+  static addBooking(user, bookingId) {
+    if (!user.bookings.includes(bookingId)) {
+      user.bookings.push(bookingId);
     }
   }
-  removeBooking(bookingId) {
-    const index = this.bookings.indexOf(bookingId);
+  static removeBooking(user, bookingId) {
+    const index = user.bookings.indexOf(bookingId);
     if (index != -1) {
-      this.bookings.splice(index, 1);
+      user.bookings.splice(index, 1);
     }
   }
 }
 
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _class, _class2;
 // constants
 BigInt('1000000000000000000000000');
-let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _dec4 = view(), _dec5 = call({}), _dec6 = call({}), _dec7 = call({}), _dec(_class = (_class2 = class RealEstateNear {
+let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _dec4 = view(), _dec5 = view(), _dec6 = call({}), _dec7 = call({}), _dec8 = call({}), _dec(_class = (_class2 = class RealEstateNear {
   properties = new UnorderedMap('unique-properties');
   users = new UnorderedMap('unique-users');
   comments = new UnorderedMap('unique-comments');
@@ -908,7 +909,13 @@ let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _d
    */
   getAllAvailableProperties() {
     const allProperties = this.getAllProperties();
+    // TODO to revert back filter by 'isAvailable'
     return allProperties.length ? allProperties : [];
+  }
+  getPropertyById({
+    id
+  }) {
+    return id ? this.internalGetPropertyById(id) : {};
   }
   getPropertiesByAccount({
     accountId
@@ -935,6 +942,7 @@ let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _d
    */
   addProperty(object) {
     // near.log(`@addProperty: ${JSON.stringify(object)}`);
+    //let donationAmount: bigint = near.attachedDeposit() as bigint;
 
     try {
       const newId = this.generateId(this.properties);
@@ -959,7 +967,7 @@ let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _d
         // update user
         const user = this.createUserIfNotExist(callerAccount);
         // push new property
-        user.addProperty(newProperty.id);
+        User.addProperty(user, newProperty.id);
       } else {
         return {
           status: 'ERROR2',
@@ -969,7 +977,7 @@ let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _d
     } catch (e) {
       return {
         status: 'ERROR3',
-        error: e.toString()
+        error: e.msg + ' @ ' + e.stack
       };
     }
     log('gas: ' + usedGas());
@@ -985,7 +993,7 @@ let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _d
         result,
         msg
       } = Property.validateProperty(object);
-      const existingProperty = this.getPropertyById(object?.id);
+      const existingProperty = this.internalGetPropertyById(object?.id);
       const callerAccount = predecessorAccountId();
       if (result) {
         // check if caller is the owner
@@ -1028,7 +1036,7 @@ let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _d
     log(`@deleteProperty: ${JSON.stringify(object)}`);
     try {
       const callerAccount = predecessorAccountId();
-      const existingProperty = this.getPropertyById(object?.id);
+      const existingProperty = this.internalGetPropertyById(object?.id);
 
       // check if caller is the owner
       if (callerAccount !== object?.owner) {
@@ -1039,7 +1047,7 @@ let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _d
       }
       const user = this.users.get(callerAccount);
       this.properties.remove(existingProperty.id);
-      user.removeProperty(existingProperty.id);
+      User.removeProperty(user, existingProperty.id);
     } catch (e) {
       return {
         status: 'ERROR',
@@ -1064,7 +1072,7 @@ let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _d
     const allProperties = this.properties;
     return allProperties.isEmpty() ? [] : allProperties.toArray().map(([, property]) => property);
   }
-  getPropertyById(id) {
+  internalGetPropertyById(id) {
     return this.properties.get(id);
   }
 
@@ -1074,10 +1082,9 @@ let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _d
    * @returns string id
    */
   generateId(map) {
-    if (map.isEmpty()) return '1'; // somehow '.length' throws an error on empty collection..
-    else return map.length + 1 + '';
+    return map.isEmpty() ? '1' : (map.length + 1).toString();
   }
-}, (_applyDecoratedDescriptor(_class2.prototype, "getAllAvailableProperties", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "getAllAvailableProperties"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "getPropertiesByAccount", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "getPropertiesByAccount"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "getBookingsByAccount", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "getBookingsByAccount"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "addProperty", [_dec5], Object.getOwnPropertyDescriptor(_class2.prototype, "addProperty"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "updateProperty", [_dec6], Object.getOwnPropertyDescriptor(_class2.prototype, "updateProperty"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "deleteProperty", [_dec7], Object.getOwnPropertyDescriptor(_class2.prototype, "deleteProperty"), _class2.prototype)), _class2)) || _class);
+}, (_applyDecoratedDescriptor(_class2.prototype, "getAllAvailableProperties", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "getAllAvailableProperties"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "getPropertyById", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "getPropertyById"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "getPropertiesByAccount", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "getPropertiesByAccount"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "getBookingsByAccount", [_dec5], Object.getOwnPropertyDescriptor(_class2.prototype, "getBookingsByAccount"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "addProperty", [_dec6], Object.getOwnPropertyDescriptor(_class2.prototype, "addProperty"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "updateProperty", [_dec7], Object.getOwnPropertyDescriptor(_class2.prototype, "updateProperty"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "deleteProperty", [_dec8], Object.getOwnPropertyDescriptor(_class2.prototype, "deleteProperty"), _class2.prototype)), _class2)) || _class);
 function deleteProperty() {
   const _state = RealEstateNear._getState();
   if (!_state && RealEstateNear._requireInit()) {
@@ -1146,6 +1153,19 @@ function getPropertiesByAccount() {
   const _result = _contract.getPropertiesByAccount(_args);
   if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(RealEstateNear._serialize(_result, true));
 }
+function getPropertyById() {
+  const _state = RealEstateNear._getState();
+  if (!_state && RealEstateNear._requireInit()) {
+    throw new Error("Contract must be initialized");
+  }
+  const _contract = RealEstateNear._create();
+  if (_state) {
+    RealEstateNear._reconstruct(_contract, _state);
+  }
+  const _args = RealEstateNear._getArgs();
+  const _result = _contract.getPropertyById(_args);
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(RealEstateNear._serialize(_result, true));
+}
 function getAllAvailableProperties() {
   const _state = RealEstateNear._getState();
   if (!_state && RealEstateNear._requireInit()) {
@@ -1160,5 +1180,5 @@ function getAllAvailableProperties() {
   if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(RealEstateNear._serialize(_result, true));
 }
 
-export { addProperty, deleteProperty, getAllAvailableProperties, getBookingsByAccount, getPropertiesByAccount, updateProperty };
+export { addProperty, deleteProperty, getAllAvailableProperties, getBookingsByAccount, getPropertiesByAccount, getPropertyById, updateProperty };
 //# sourceMappingURL=hello_near.js.map

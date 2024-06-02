@@ -8,7 +8,9 @@ import type { AccountState, FinalExecutionOutcome, Wallet, WalletSelector } from
 import type { WalletSelectorModal } from '@near-wallet-selector/modal-ui-js';
 import { providers } from 'near-api-js';
 
-export const CONTRACT_ID = 'onemorelastaccount1.testnet';
+export const CONTRACT_ID = 'onemorelastaccount2.testnet';
+const TGAS = '30000000000000';
+const NO_DEPOSIT = '0';
 
 declare global {
   interface Window {
@@ -86,6 +88,7 @@ export class NearApiService {
 
     const _modal = setupModal(_selector, {
       contractId: CONTRACT_ID,
+      description: 'Please select a wallet..',
     });
     const state = _selector.store.getState();
 
@@ -100,7 +103,7 @@ export class NearApiService {
     this.modal = _modal;
 
     this.isInitializedSubject.next(true);
-    const isSignedIn = this.isUserSignedIn();
+    const isSignedIn = await this.isUserSignedIn();
     if (isSignedIn) {
       this.wallet = await this.selector.wallet();
     }
@@ -117,16 +120,20 @@ export class NearApiService {
       args_base64: Buffer.from(JSON.stringify(args)).toString('base64'),
       finality: 'optimistic',
     });
+    
     //@ts-ignore
-    return JSON.parse(Buffer.from(res.result).toString());
+    const finalResult = JSON.parse(Buffer.from(res.result).toString());
+    console.log(`@viewMethod of '${method}' returned ${finalResult ? finalResult : 'nothing'}`);
+
+    return finalResult;
   }
 
   async callMethod({
     contractId,
     method,
     args = {},
-    gas = '300000000000000',
-    deposit = '0',
+    deposit = NO_DEPOSIT,
+    gas = TGAS,
   }: {
     contractId: string;
     method: string;
@@ -148,9 +155,10 @@ export class NearApiService {
         },
       ],
     });
-    console.log('heer');
-    debugger;
-    return result ? providers.getTransactionLastResult(result) : null;
+    console.log(`@callMethod of '${method}' finished`);
+    const finalRes = result ? providers.getTransactionLastResult(result) : null;
+    console.log(`@callMethod of '${method}' ended with result: ${finalRes ? JSON.stringify(finalRes) : 'void'}`);
+    return finalRes;
   }
 
   // async callFunction(){
