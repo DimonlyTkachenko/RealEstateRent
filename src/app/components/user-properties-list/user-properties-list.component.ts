@@ -7,17 +7,20 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatCheckboxChange, MatCheckbox } from '@angular/material/checkbox';
 import { DialogComponent } from '../common/dialog/dialog.component';
+import { LoaderService } from '../../services/loader.service';
+import { LoaderComponent } from '../common/loader/loader.component';
 
 @Component({
   selector: 'app-user-properties-list',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, CommonModule, RouterOutlet, MatButtonModule, MatCheckbox],
+  imports: [RouterLink, RouterLinkActive, CommonModule, RouterOutlet, MatButtonModule, MatCheckbox, LoaderComponent],
   templateUrl: './user-properties-list.component.html',
   styleUrl: './user-properties-list.component.scss',
 })
 export class UserPropertiesListComponent {
   private realEstateService = inject(RealEstateService);
   private snackBar = inject(MatSnackBar);
+  private loaderService = inject(LoaderService);
   private dialog = inject(MatDialog);
   userProperties: any[];
   isInitialized = false;
@@ -45,15 +48,17 @@ export class UserPropertiesListComponent {
       },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        this.deleteProperty(property);
+        this.loaderService.show();
+        await this.deleteProperty(property);
+        this.loaderService.hide();
       }
     });
   }
   async deleteProperty(property: any) {
-    this.realEstateService.deleteProperty(property);
-    this.snackBar.open('Property deleted', 'Close', {
+   const response = await this.realEstateService.deleteProperty(property);
+    this.snackBar.open(response?.error ? response?.error : 'Property deleted', 'Close', {
       duration: 2000,
     });
   }

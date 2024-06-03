@@ -9,6 +9,7 @@ export type Property = {
   price: BigInt;
   images: string[];
   isAvailable: boolean;
+  creationDate: Date;
   comments: string[]; // reference to comments
   datesBooked: string[]; // maybe zulu date without time
 };

@@ -827,18 +827,21 @@ class Property {
   // reference to comments
   // maybe zulu date without time
 
-  constructor(id, title, description = '', location = 'not specified', owner,
+  constructor(id, title, description = '', type = '', location = 'not specified', options, owner,
   // Near account
   price = BigInt(0), images = [],
   // only urls
-  isAvailable = true) {
+  isAvailable = true, creationDate = new Date()) {
     this.id = id;
     this.title = title;
     this.description = description;
+    this.type = type;
     this.location = location;
+    this.options = options;
     this.owner = owner;
     this.price = price;
     this.isAvailable = isAvailable;
+    this.creationDate = creationDate;
     this.comments = [];
     this.images = images.length > IMAGES_LIMIT ? images.slice(0, IMAGES_LIMIT) : images;
   }
@@ -909,8 +912,7 @@ let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _d
    */
   getAllAvailableProperties() {
     const allProperties = this.getAllProperties();
-    // TODO to revert back filter by 'isAvailable'
-    return allProperties.length ? allProperties : [];
+    return allProperties.length ? allProperties.filter(el => el.isAvailable) : [];
   }
   getPropertyById({
     id
@@ -955,11 +957,11 @@ let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _d
         // check if caller is the owner
         if (callerAccount !== object?.owner) {
           return {
-            status: 'ERROR1',
+            status: 'ERROR',
             error: 'Creation denied. Caller account does not match the owner!'
           };
         }
-        const newProperty = new Property(newId, object?.title, object?.description, object?.location, object?.owner, BigInt(object?.price || 0), object?.images, object?.isAvailable);
+        const newProperty = new Property(newId, object?.title, object?.description, object?.type, object?.location, object?.options, object?.owner, BigInt(object?.price || 0), object?.images, object?.isAvailable);
 
         // add to the collection
         this.properties.set(newId, newProperty);
@@ -970,53 +972,6 @@ let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _d
         User.addProperty(user, newProperty.id);
       } else {
         return {
-          status: 'ERROR2',
-          error: msg
-        };
-      }
-    } catch (e) {
-      return {
-        status: 'ERROR3',
-        error: e.msg + ' @ ' + e.stack
-      };
-    }
-    log('gas: ' + usedGas());
-    return {
-      status: 'CREATED',
-      error: 'no errors it is success!'
-    };
-  }
-  updateProperty(object) {
-    //near.log(`@updateProperty: ${JSON.stringify(object)}`);
-    try {
-      const {
-        result,
-        msg
-      } = Property.validateProperty(object);
-      const existingProperty = this.internalGetPropertyById(object?.id);
-      const callerAccount = predecessorAccountId();
-      if (result) {
-        // check if caller is the owner
-        if (callerAccount !== object?.owner) {
-          return {
-            status: 'ERROR',
-            error: 'Update denied. Caller account does not match the owner!'
-          };
-        }
-        if (existingProperty) {
-          existingProperty.title = object?.title;
-          existingProperty.description = object?.description;
-          existingProperty.price = object?.price;
-          existingProperty.isAvailable = object?.isAvailable;
-          existingProperty.location = object?.location;
-        } else {
-          return {
-            status: 'ERROR',
-            error: 'Property does not exist!'
-          };
-        }
-      } else {
-        return {
           status: 'ERROR',
           error: msg
         };
@@ -1024,13 +979,61 @@ let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _d
     } catch (e) {
       return {
         status: 'ERROR',
+        error: e.msg + ' @ ' + e.stack
+      };
+    }
+    log('gas: ' + usedGas());
+    return {
+      status: 'CREATED',
+      error: ''
+    };
+  }
+  updateProperty(object) {
+    const existingProperty = this.internalGetPropertyById(object?.id);
+    const callerAccount = predecessorAccountId();
+    try {
+      const {
+        result,
+        msg
+      } = Property.validateProperty(object);
+      if (!result) {
+        return {
+          status: 'ERROR',
+          error: 'Validation error: ' + msg
+        };
+      }
+      if (callerAccount !== object?.owner) {
+        return {
+          status: 'ERROR',
+          error: 'Update denied. Caller account does not match the owner!'
+        };
+      }
+      if (!existingProperty) {
+        return {
+          status: 'ERROR',
+          error: 'Property does not exist!'
+        };
+      }
+      existingProperty.title = object?.title ?? existingProperty.title;
+      existingProperty.description = object?.description ?? existingProperty.description;
+      existingProperty.type = object?.type ?? existingProperty.type;
+      existingProperty.price = object?.price ?? existingProperty.price;
+      existingProperty.options = object?.options ?? existingProperty.options;
+      existingProperty.isAvailable = object?.isAvailable ?? existingProperty.isAvailable;
+      existingProperty.location = object?.location ?? existingProperty.location;
+
+      // Reset property
+      this.properties.set(object?.id, existingProperty);
+      return {
+        status: 'UPDATED',
+        error: ''
+      };
+    } catch (e) {
+      return {
+        status: 'ERROR',
         error: e.toString()
       };
     }
-    return {
-      status: 'UPDATED',
-      error: ''
-    };
   }
   deleteProperty(object) {
     log(`@deleteProperty: ${JSON.stringify(object)}`);
@@ -1071,6 +1074,10 @@ let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _d
   getAllProperties() {
     const allProperties = this.properties;
     return allProperties.isEmpty() ? [] : allProperties.toArray().map(([, property]) => property);
+  }
+  getAllBookings() {
+    const allBookings = this.bookings;
+    return allBookings.isEmpty() ? [] : allBookings.toArray().map(([, booking]) => booking);
   }
   internalGetPropertyById(id) {
     return this.properties.get(id);

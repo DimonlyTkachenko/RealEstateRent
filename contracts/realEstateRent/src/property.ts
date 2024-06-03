@@ -11,6 +11,7 @@ export class Property {
   price: BigInt;
   images: string[];
   isAvailable: boolean;
+  creationDate: Date;
   comments: string[]; // reference to comments
   datesBooked: string[]; // maybe zulu date without time
 
@@ -24,7 +25,8 @@ export class Property {
     owner: string, // Near account
     price: BigInt = BigInt(0),
     images: string[] = [], // only urls
-    isAvailable: boolean = true
+    isAvailable: boolean = true,
+    creationDate: Date = new Date()
   ) {
     this.id = id;
     this.title = title;
@@ -35,6 +37,7 @@ export class Property {
     this.owner = owner;
     this.price = price;
     this.isAvailable = isAvailable;
+    this.creationDate = creationDate;
     this.comments = [];
     this.images = images.length > IMAGES_LIMIT ? images.slice(0, IMAGES_LIMIT) : images;
   }

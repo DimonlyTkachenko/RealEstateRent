@@ -1,5 +1,6 @@
 import { NearBindgen, near, call, view, UnorderedMap, AccountId } from 'near-sdk-js';
 import { Property } from './property';
+import { uuidv4 } from 'uuid';
 import { User } from './user';
 import { Booking } from './booking';
 import { Comment } from './comment';
@@ -20,8 +21,7 @@ class RealEstateNear {
   @view({})
   getAllAvailableProperties(): Property[] {
     const allProperties = this.getAllProperties();
-    // TODO to revert back filter by 'isAvailable'
-    return allProperties.length ? allProperties : [];
+    return allProperties.length ? allProperties.filter((el) => el.isAvailable) : [];
   }
 
   @view({})
@@ -67,7 +67,7 @@ class RealEstateNear {
       if (result) {
         // check if caller is the owner
         if (callerAccount !== object?.owner) {
-          return { status: 'ERROR1', error: 'Creation denied. Caller account does not match the owner!' };
+          return { status: 'ERROR', error: 'Creation denied. Caller account does not match the owner!' };
         }
         const newProperty = new Property(
           newId,
@@ -90,44 +90,49 @@ class RealEstateNear {
         // push new property
         User.addProperty(user, newProperty.id);
       } else {
-        return { status: 'ERROR2', error: msg };
-      }
-    } catch (e) {
-      return { status: 'ERROR3', error: e.msg + ' @ ' + e.stack };
-    }
-    near.log('gas: ' + near.usedGas());
-    return { status: 'CREATED', error: 'no errors it is success!' };
-  }
-
-  @call({})
-  updateProperty(object: any): object {
-    //near.log(`@updateProperty: ${JSON.stringify(object)}`);
-    try {
-      const { result, msg } = Property.validateProperty(object);
-
-      const existingProperty = this.internalGetPropertyById(object?.id);
-      const callerAccount: AccountId = near.predecessorAccountId();
-      if (result) {
-        // check if caller is the owner
-        if (callerAccount !== object?.owner) {
-          return { status: 'ERROR', error: 'Update denied. Caller account does not match the owner!' };
-        }
-        if (existingProperty) {
-          existingProperty.title = object?.title;
-          existingProperty.description = object?.description;
-          existingProperty.price = object?.price;
-          existingProperty.isAvailable = object?.isAvailable;
-          existingProperty.location = object?.location;
-        } else {
-          return { status: 'ERROR', error: 'Property does not exist!' };
-        }
-      } else {
         return { status: 'ERROR', error: msg };
       }
     } catch (e) {
+      return { status: 'ERROR', error: e.msg + ' @ ' + e.stack };
+    }
+    near.log('gas: ' + near.usedGas());
+    return { status: 'CREATED', error: '' };
+  }
+  @call({})
+  updateProperty(object: any): object {
+    const existingProperty = this.internalGetPropertyById(object?.id);
+    const callerAccount: AccountId = near.predecessorAccountId();
+
+    try {
+      const { result, msg } = Property.validateProperty(object);
+
+      if (!result) {
+        return { status: 'ERROR', error: 'Validation error: ' + msg };
+      }
+
+      if (callerAccount !== object?.owner) {
+        return { status: 'ERROR', error: 'Update denied. Caller account does not match the owner!' };
+      }
+
+      if (!existingProperty) {
+        return { status: 'ERROR', error: 'Property does not exist!' };
+      }
+
+      existingProperty.title = object?.title ?? existingProperty.title;
+      existingProperty.description = object?.description ?? existingProperty.description;
+      existingProperty.type = object?.type ?? existingProperty.type;
+      existingProperty.price = object?.price ?? existingProperty.price;
+      existingProperty.options = object?.options ?? existingProperty.options;
+      existingProperty.isAvailable = object?.isAvailable ?? existingProperty.isAvailable;
+      existingProperty.location = object?.location ?? existingProperty.location;
+
+      // Reset property
+      this.properties.set(object?.id, existingProperty);
+
+      return { status: 'UPDATED', error: '' };
+    } catch (e) {
       return { status: 'ERROR', error: e.toString() };
     }
-    return { status: 'UPDATED', error: '' };
   }
 
   @call({})
@@ -169,6 +174,11 @@ class RealEstateNear {
     return allProperties.isEmpty() ? [] : allProperties.toArray().map(([, property]) => property);
   }
 
+  getAllBookings(): Booking[] {
+    const allBookings = this.bookings;
+    return allBookings.isEmpty() ? [] : allBookings.toArray().map(([, booking]) => booking);
+  }
+
   internalGetPropertyById(id: string): Property {
     return this.properties.get(id);
   }
@@ -179,6 +189,18 @@ class RealEstateNear {
    * @returns string id
    */
   generateId(map: UnorderedMap<any>): string {
-    return map.isEmpty() ? '1' : (map.length + 1).toString();
+    let newId = this.generateUniqueId();
+    // check for id to be unique
+    while (!!map.get(newId)) {
+      newId = this.generateUniqueId();
+    }
+    return newId;
+  }
+
+  generateUniqueId(): string {
+    return 'xxxx-xxxx-xxx-xxxx'.replace(/[x]/g, (c) => {
+      const r = Math.floor(Math.random() * 16);
+      return r.toString(16);
+    });
   }
 }

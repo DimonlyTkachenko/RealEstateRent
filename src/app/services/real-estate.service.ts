@@ -50,13 +50,20 @@ export class RealEstateService {
     return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getAllAvailableProperties'));
   }
 
-  createNewProperty(object: { [prop: string]: any }): void {
+  async createNewProperty(object: { [prop: string]: any }): Promise<any> {
     const accountId = this.nearApiService.accountId;
-    const args = { owner: accountId, images: ['https://assetsio.gnwcdn.com/minecraft-house-ideas-ultimate-survival-house.jpg?width=1200&height=1200&fit=bounds&quality=70&format=jpg&auto=webp','https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3aNajCX-5IbukJHMI8AGDGrkXwClXnmzhgA&usqp=CAU'], ...object };
+    const args = {
+      owner: accountId,
+      images: [
+        'https://assetsio.gnwcdn.com/minecraft-house-ideas-ultimate-survival-house.jpg?width=1200&height=1200&fit=bounds&quality=70&format=jpg&auto=webp',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3aNajCX-5IbukJHMI8AGDGrkXwClXnmzhgA&usqp=CAU',
+      ],
+      ...object,
+    };
 
     console.log('@createNewProperty: ' + JSON.stringify(args));
 
-    this.nearApiService.callMethod({
+   await this.nearApiService.callMethod({
       contractId: CONTRACT_ID,
       method: 'addProperty',
       args,
@@ -65,13 +72,13 @@ export class RealEstateService {
     //http://localhost:4200/my-properties/create-property?transactionHashes=7afnpaj32kUGmGzbNxhjcid5vfbMBvZA72qv6qSQwfGx
   }
 
-  updateProperty(object: { [prop: string]: any }): void {
+  async updateProperty(object: { [prop: string]: any }): Promise<any> {
     const accountId = this.nearApiService.accountId;
     const args = { owner: accountId, ...object };
 
     console.log('@updateProperty: ' + JSON.stringify(args));
-
-    this.nearApiService.callMethod({
+    //debugger;
+    await this.nearApiService.callMethod({
       contractId: CONTRACT_ID,
       method: 'updateProperty',
       args,
@@ -84,13 +91,13 @@ export class RealEstateService {
     const accountId = this.nearApiService.accountId;
     return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getPropertiesByAccount', { accountId }));
   }
-  deleteProperty(object: { [prop: string]: any }): void {
+  async deleteProperty(object: { [prop: string]: any }): Promise<any> {
     const accountId = this.nearApiService.accountId;
     const args = { owner: accountId, ...object };
 
     console.log('@deleteProperty: ' + JSON.stringify(args));
 
-    this.nearApiService.callMethod({
+    await this.nearApiService.callMethod({
       contractId: CONTRACT_ID,
       method: 'deleteProperty',
       args,
