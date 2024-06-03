@@ -2,6 +2,7 @@
 
 # NEAR contract
 /contracts/realEstateRent/node_modules
+/contracts/realEstateRent/build
 
 # Express backend
 /backend/node_modules
