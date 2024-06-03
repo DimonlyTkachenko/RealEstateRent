@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { RealEstateService } from '../../services/real-estate.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -22,6 +22,7 @@ export class UserPropertiesListComponent {
   private snackBar = inject(MatSnackBar);
   private loaderService = inject(LoaderService);
   private dialog = inject(MatDialog);
+  private router = inject(Router);
   userProperties: any[];
   isInitialized = false;
   isSignedIn: boolean;
@@ -41,25 +42,32 @@ export class UserPropertiesListComponent {
 
   confirmDelete(property: any): void {
     const dialogRef = this.dialog.open(DialogComponent, {
-      width: '250px',
+      width: '400px',
+      panelClass: 'dialog-container',
       data: {
         title: 'Confirm Delete',
-        message: 'Are you sure you want to delete this property?',
+        message: `Are you sure you want to delete '${property.title}' property?`,
       },
     });
 
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        this.loaderService.show();
         await this.deleteProperty(property);
-        this.loaderService.hide();
       }
     });
   }
   async deleteProperty(property: any) {
-   const response = await this.realEstateService.deleteProperty(property);
+    this.loaderService.show();
+    const response = await this.realEstateService.deleteProperty(property);
+    this.loaderService.hide();
+
     this.snackBar.open(response?.error ? response?.error : 'Property deleted', 'Close', {
       duration: 2000,
     });
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 2500);
+
   }
 }

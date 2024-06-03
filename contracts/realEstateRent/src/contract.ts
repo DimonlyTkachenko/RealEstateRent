@@ -1,6 +1,5 @@
 import { NearBindgen, near, call, view, UnorderedMap, AccountId } from 'near-sdk-js';
 import { Property } from './property';
-import { uuidv4 } from 'uuid';
 import { User } from './user';
 import { Booking } from './booking';
 import { Comment } from './comment';

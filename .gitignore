@@ -4,7 +4,7 @@
 /contracts/realEstateRent/node_modules
 
 # Express backend
-
+/backend/node_modules
 
 # Compiled output
 /dist

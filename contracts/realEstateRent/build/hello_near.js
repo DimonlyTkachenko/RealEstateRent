@@ -1089,7 +1089,18 @@ let RealEstateNear = (_dec = NearBindgen({}), _dec2 = view(), _dec3 = view(), _d
    * @returns string id
    */
   generateId(map) {
-    return map.isEmpty() ? '1' : (map.length + 1).toString();
+    let newId = this.generateUniqueId();
+    // check for id to be unique
+    while (!!map.get(newId)) {
+      newId = this.generateUniqueId();
+    }
+    return newId;
+  }
+  generateUniqueId() {
+    return 'xxxx-xxxx-xxx-xxxx'.replace(/[x]/g, c => {
+      const r = Math.floor(Math.random() * 16);
+      return r.toString(16);
+    });
   }
 }, (_applyDecoratedDescriptor(_class2.prototype, "getAllAvailableProperties", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "getAllAvailableProperties"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "getPropertyById", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "getPropertyById"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "getPropertiesByAccount", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "getPropertiesByAccount"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "getBookingsByAccount", [_dec5], Object.getOwnPropertyDescriptor(_class2.prototype, "getBookingsByAccount"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "addProperty", [_dec6], Object.getOwnPropertyDescriptor(_class2.prototype, "addProperty"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "updateProperty", [_dec7], Object.getOwnPropertyDescriptor(_class2.prototype, "updateProperty"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "deleteProperty", [_dec8], Object.getOwnPropertyDescriptor(_class2.prototype, "deleteProperty"), _class2.prototype)), _class2)) || _class);
 function deleteProperty() {

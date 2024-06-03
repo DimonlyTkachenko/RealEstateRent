@@ -70,29 +70,33 @@ export class PropertyCreateComponent {
     ) {
       this.loaderService.show();
       if (this.isEditMode) {
-        if (typeof this.property.options == 'string') {
-          this.property.options = this.property.options.split(',').map((el) => el.trim());
-        }
-
+        this.handleOptionsMapping();
         const response = await this.realEstateService.updateProperty(this.property);
 
         this.loaderService.hide();
 
-        this.snackBar.open(response?.error ? response?.error : 'Property was created!', 'Close', {
+        this.snackBar.open(response?.error ? response?.error : 'Property was updated!', 'Close', {
           duration: 2000,
         });
 
         this.navigateByRoute('/my-properties', 2500);
       } else {
+        this.handleOptionsMapping();
         const response = await this.realEstateService.createNewProperty(this.property);
         this.loaderService.hide();
-        this.snackBar.open(response?.error ? response?.error : 'Property was updated!', 'Close', {
+        this.snackBar.open(response?.error ? response?.error : 'Property was created!', 'Close', {
           duration: 2000,
         });
         this.navigateByRoute('/my-properties', 2500);
       }
     } else {
       console.error('Form is invalid');
+    }
+  }
+
+  handleOptionsMapping() {
+    if (typeof this.property.options == 'string') {
+      this.property.options = this.property.options.split(',').map((el) => el.trim());
     }
   }
 

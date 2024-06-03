@@ -1,1 +1,10 @@
-<p>image-upload works!</p>
+<!-- src/app/upload/upload.component.html -->
+
+<div>
+  <input type="file" (change)="onFileSelected($event)" />
+  <button (click)="onSubmit()">Upload</button>
+  <div *ngIf="uploadedImageUrl">
+    <p>Uploaded Image:</p>
+    <img [src]="uploadedImageUrl" alt="Uploaded Image" />
+  </div>
+</div>
