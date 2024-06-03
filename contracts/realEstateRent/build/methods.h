@@ -1,7 +1,0 @@
-DEFINE_NEAR_METHOD(addProperty)
-DEFINE_NEAR_METHOD(deleteProperty)
-DEFINE_NEAR_METHOD(getAllAvailableProperties)
-DEFINE_NEAR_METHOD(getBookingsByAccount)
-DEFINE_NEAR_METHOD(getPropertiesByAccount)
-DEFINE_NEAR_METHOD(getPropertyById)
-DEFINE_NEAR_METHOD(updateProperty)
