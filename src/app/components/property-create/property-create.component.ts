@@ -11,7 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { Property } from '../../entities/property';
 import { LoaderService } from '../../services/loader.service';
 import { LoaderComponent } from '../common/loader/loader.component';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar'; 
 
 @Component({
   selector: 'app-property-create',

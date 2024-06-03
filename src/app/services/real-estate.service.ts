@@ -63,7 +63,7 @@ export class RealEstateService {
 
     console.log('@createNewProperty: ' + JSON.stringify(args));
 
-   await this.nearApiService.callMethod({
+    await this.nearApiService.callMethod({
       contractId: CONTRACT_ID,
       method: 'addProperty',
       args,
@@ -106,5 +106,13 @@ export class RealEstateService {
 
   getPropertyById(id: string): Observable<object> {
     return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getPropertyById', { id }));
+  }
+
+  uploadImage(image: File): Observable<Object> {
+    const formData = new FormData();
+
+    formData.append('image', image, image.name);
+
+    return this.http.post<{ url: string }>('http://localhost:3000/upload', formData);
   }
 }

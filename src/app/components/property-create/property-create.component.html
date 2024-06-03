@@ -31,15 +31,13 @@
         <input matInput type="number" [(ngModel)]="property.price" name="price" required />
       </mat-form-field>
 
-      <mat-checkbox [(ngModel)]="property.isAvailable" name="isAvailable">
-        Available for booking
-      </mat-checkbox>
-
-      <app-image-upload></app-image-upload>
+      <mat-checkbox [(ngModel)]="property.isAvailable" name="isAvailable"> Available for booking </mat-checkbox>
+      <div><app-image-upload></app-image-upload></div>
+<br><br>
       <!-- (imagesUploaded)="handleImagesUploaded($event)" -->
 
       <button mat-raised-button color="primary" type="submit">
-        {{ isEditMode ? 'Update Property' : 'Add Property' }}
+        {{ isEditMode ? "Update Property" : "Add Property" }}
       </button>
     </form>
   </mat-card>
