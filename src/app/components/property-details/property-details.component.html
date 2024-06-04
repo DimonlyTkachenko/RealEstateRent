@@ -34,7 +34,7 @@
     </div>
   </div>
 
-  <div class="booking-form">
+  <div *ngIf="!isUserOwner" class="booking-form">
     <h3>Book this property</h3>
     <form (ngSubmit)="onBook()">
       <mat-form-field appearance="fill">

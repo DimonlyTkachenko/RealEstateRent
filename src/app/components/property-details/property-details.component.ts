@@ -50,6 +50,7 @@ export class PropertyDetailsComponent implements OnInit {
   property: Property;
   booking: any = {};
   slides: { title: string; src: string }[] = [];
+  isUserOwner: boolean;
 
   constructor(private route: ActivatedRoute, private realEstateService: RealEstateService) {}
 
@@ -58,6 +59,7 @@ export class PropertyDetailsComponent implements OnInit {
     if (propertyId) {
       this.realEstateService.getPropertyById(propertyId).subscribe((data) => {
         this.property = data as Property;
+        this.isUserOwner = this.realEstateService.getUserAccountId() === this.property.owner;
         this.slides = this.property.images.map((el) => {
           return { title: 'No image', src: el };
         });

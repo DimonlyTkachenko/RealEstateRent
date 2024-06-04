@@ -124,6 +124,7 @@ class RealEstateNear {
       existingProperty.options = object?.options ?? existingProperty.options;
       existingProperty.isAvailable = object?.isAvailable ?? existingProperty.isAvailable;
       existingProperty.location = object?.location ?? existingProperty.location;
+      existingProperty.images = object?.images || [];
 
       // Reset property
       this.properties.set(object?.id, existingProperty);

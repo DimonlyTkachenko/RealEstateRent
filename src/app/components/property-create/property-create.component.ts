@@ -11,7 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { Property } from '../../entities/property';
 import { LoaderService } from '../../services/loader.service';
 import { LoaderComponent } from '../common/loader/loader.component';
-import { MatSnackBar } from '@angular/material/snack-bar'; 
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-property-create',
@@ -32,6 +32,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class PropertyCreateComponent {
   property: Property = {} as Property;
   isEditMode: boolean = false;
+  uploadedImages: any[] = [];
+  existingImages: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -48,6 +50,7 @@ export class PropertyCreateComponent {
       console.log('edit mode enabled for property: ' + propertyId);
       this.realEstateService.getPropertyById(propertyId).subscribe((data) => {
         const property = data as Property;
+        this.existingImages = property.images;
         if (property.options && typeof property.options == 'object') {
           property.options = property.options.join(',');
         }
@@ -56,8 +59,8 @@ export class PropertyCreateComponent {
     }
   }
 
-  handleImagesUploaded(images: string[]) {
-    this.property.images = images;
+  onImagesUploaded(images: any[]) {
+    this.uploadedImages = images;
   }
 
   async onSubmit() {
@@ -69,6 +72,8 @@ export class PropertyCreateComponent {
       this.property.price
     ) {
       this.loaderService.show();
+      this.property.images = this.uploadedImages.map((el) => el.url);
+      console.log('@onSubmit: property for update - ', this.property);
       if (this.isEditMode) {
         this.handleOptionsMapping();
         const response = await this.realEstateService.updateProperty(this.property);

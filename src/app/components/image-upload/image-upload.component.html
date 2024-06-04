@@ -1,23 +1,25 @@
-
 <label class="image-upload-container btn btn-bwm">
-    <span>Select Image</span>
-    <input #imageInput
-           type="file"
-           accept="image/*"
-           (change)="processFile(imageInput)">
-  </label>
-  
-  
-  <div *ngIf="selectedFile" class="img-preview-container">
-  
-    <div class="img-preview{{selectedFile.status === 'fail' ? '-error' : ''}}"
-         [ngStyle]="{'background-image': 'url('+ selectedFile.src + ')'}">
+  <span>Select Image</span>
+  <input #imageInput type="file" accept="image/*" (change)="processFile(imageInput)" />
+</label>
+
+<div *ngIf="allImages.length > 0 || isEditMode" class="img-preview-container">
+  <div class="image-asset-container">
+    <div *ngFor="let image of allImages">
+      <div
+        class="img-preview{{ image.status === 'fail' ? '-error' : '' }}"
+        [ngStyle]="{ 'background-image': 'url(' + image.src + ')' }"
+      ></div>
+      <div (click)="deleteImage(image)" class="delete-icon-container">
+        <img width="40px" height="40px" src="../../../assets/delete_icon.png" alt="" />
+      </div>
     </div>
-  
-    <div *ngIf="selectedFile.isPending" class="img-loading-overlay">
+    <div *ngIf="selectedFile && selectedFile.isPending" class="img-loading-overlay">
       <div class="img-spinning-circle"></div>
     </div>
-  
-    <div *ngIf="selectedFile.status === 'ok'" class="alert alert-success"> Image Uploaded Succesfuly!</div>
-    <div *ngIf="selectedFile.status === 'fail'" class="alert alert-danger"> Image Upload Failed!</div>
   </div>
+  <div *ngIf="selectedFile && selectedFile.status === 'ok'" class="alert alert-success">
+    Image uploaded successfully!
+  </div>
+  <div *ngIf="selectedFile && selectedFile.status === 'fail'" class="alert alert-danger">Upload failed!</div>
+</div>

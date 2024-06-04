@@ -32,9 +32,8 @@
       </mat-form-field>
 
       <mat-checkbox [(ngModel)]="property.isAvailable" name="isAvailable"> Available for booking </mat-checkbox>
-      <div><app-image-upload></app-image-upload></div>
-<br><br>
-      <!-- (imagesUploaded)="handleImagesUploaded($event)" -->
+      <div><app-image-upload (imagesUploaded)="onImagesUploaded($event)" [existingImages]="existingImages"></app-image-upload></div>
+      <br /><br />
 
       <button mat-raised-button color="primary" type="submit">
         {{ isEditMode ? "Update Property" : "Add Property" }}

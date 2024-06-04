@@ -54,10 +54,6 @@ export class RealEstateService {
     const accountId = this.nearApiService.accountId;
     const args = {
       owner: accountId,
-      images: [
-        'https://assetsio.gnwcdn.com/minecraft-house-ideas-ultimate-survival-house.jpg?width=1200&height=1200&fit=bounds&quality=70&format=jpg&auto=webp',
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3aNajCX-5IbukJHMI8AGDGrkXwClXnmzhgA&usqp=CAU',
-      ],
       ...object,
     };
 
@@ -77,7 +73,7 @@ export class RealEstateService {
     const args = { owner: accountId, ...object };
 
     console.log('@updateProperty: ' + JSON.stringify(args));
-    //debugger;
+
     await this.nearApiService.callMethod({
       contractId: CONTRACT_ID,
       method: 'updateProperty',
@@ -114,5 +110,9 @@ export class RealEstateService {
     formData.append('image', image, image.name);
 
     return this.http.post<{ url: string }>('http://localhost:3000/upload', formData);
+  }
+
+  getUserAccountId(): string {
+    return this.nearApiService.accountId;
   }
 }
