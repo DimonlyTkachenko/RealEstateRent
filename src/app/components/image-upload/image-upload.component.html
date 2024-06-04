@@ -11,7 +11,7 @@
         [ngStyle]="{ 'background-image': 'url(' + image.src + ')' }"
       ></div>
       <div (click)="deleteImage(image)" class="delete-icon-container">
-        <img width="40px" height="40px" src="../../../assets/delete_icon.png" alt="" />
+        <img width="30px" height="30px" src="../../../assets/delete_icon.png" alt="" />
       </div>
     </div>
     <div *ngIf="selectedFile && selectedFile.isPending" class="img-loading-overlay">
