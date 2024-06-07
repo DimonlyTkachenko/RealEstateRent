@@ -1,3 +1,5 @@
+import { Comment } from './comment';
+
 export const IMAGES_LIMIT = 6;
 
 export class Property {
@@ -7,13 +9,13 @@ export class Property {
   type: string;
   location: string;
   options: string[];
-  owner: string; // ref to account creator
+  owner: string;
   price: BigInt;
   images: string[];
   isAvailable: boolean;
   creationDate: Date;
-  comments: string[]; // reference to comments
-  datesBooked: string[]; // maybe zulu date without time
+  comments: string[]; // reference to Comment
+  bookings: string[]; // reference to Booking
 
   constructor(
     id: string,
@@ -39,6 +41,7 @@ export class Property {
     this.isAvailable = isAvailable;
     this.creationDate = creationDate;
     this.comments = [];
+    this.bookings = []
     this.images = images.length > IMAGES_LIMIT ? images.slice(0, IMAGES_LIMIT) : images;
   }
 
@@ -56,12 +59,11 @@ export class Property {
     }
     return { result: !msg, msg };
   }
-}
 
-enum PropertyType {
-  house = 'House',
-  apartment = 'Apartment',
-  flat = 'Flat',
-  land = 'Land',
-  office = 'Office',
+  // static addComment(property: Property, commentId: string) {
+  //   if (!property.comments) {
+  //     property.comments = [];
+  //   }
+  //   property.comments.push(commentId);
+  // }
 }

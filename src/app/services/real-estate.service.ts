@@ -54,6 +54,7 @@ export class RealEstateService {
     const accountId = this.nearApiService.accountId;
     const args = {
       owner: accountId,
+      creationDate: new Date().toISOString(),
       ...object,
     };
 
@@ -64,8 +65,6 @@ export class RealEstateService {
       method: 'addProperty',
       args,
     });
-
-    //http://localhost:4200/my-properties/create-property?transactionHashes=7afnpaj32kUGmGzbNxhjcid5vfbMBvZA72qv6qSQwfGx
   }
 
   async updateProperty(object: { [prop: string]: any }): Promise<any> {
@@ -79,8 +78,6 @@ export class RealEstateService {
       method: 'updateProperty',
       args,
     });
-
-    //http://localhost:4200/my-properties/create-property?transactionHashes=7afnpaj32kUGmGzbNxhjcid5vfbMBvZA72qv6qSQwfGx
   }
 
   getUserProperties(): Observable<any[]> {
@@ -100,6 +97,23 @@ export class RealEstateService {
     });
   }
 
+  async createComment(object: { [prop: string]: any }): Promise<any> {
+    const accountId = this.getUserAccountId();
+    const args = { accountId: accountId, creationDate: new Date().toISOString(), ...object };
+
+    console.log('@createComment: ' + JSON.stringify(args));
+
+    await this.nearApiService.callMethod({
+      contractId: CONTRACT_ID,
+      method: 'createComment',
+      args,
+    });
+  }
+
+  getPropertyComments(propertyId: string) {
+    return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getCommentsByProperty', { id: propertyId }));
+  }
+
   getPropertyById(id: string): Observable<object> {
     return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getPropertyById', { id }));
   }
@@ -114,5 +128,12 @@ export class RealEstateService {
 
   getUserAccountId(): string {
     return this.nearApiService.accountId;
+  }
+
+  sortByDate(data: any[], sortBy: string = 'creationDate'): any[] {
+    return data.sort(function (a, b): number {
+      const res = new Date(b[sortBy]).getTime() - new Date(a[sortBy]).getTime();
+      return res;
+    });
   }
 }

@@ -1,39 +1,5 @@
-// .property-details-container {
-//     padding: 16px;
-//   }
-  
-//   .property-gallery {
-//     margin-bottom: 16px;
-//   }
-  
-//   .property-description,
-//   .property-location,
-//   .property-type,
-//   .property-options,
-//   .booking-form {
-//     margin-bottom: 16px;
-//   }
-  
-//   .option {
-//     display: inline-block;
-//     background-color: #e0e0e0;
-//     padding: 4px 8px;
-//     margin-right: 8px;
-//     margin-bottom: 8px;
-//     border-radius: 4px;
-//   }
-  
-//   .booking-form form {
-//     display: flex;
-//     flex-direction: column;
-//   }
-  
-//   .booking-form mat-form-field {
-//     width: 100%;
-//     margin-bottom: 16px;
-//   }
 .property-details-container {
-  max-width: 1400px;
+  max-width: 1200px;
   width: 90%;
   margin: auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -41,11 +7,11 @@
   background: #fff;
   border-radius: 8px;
 }
-.carousel-container{
+
+.carousel-container {
   max-width: 100%;
   display: flex;
   justify-content: center;
-
 }
 
 .property-details-container h1,
@@ -71,9 +37,14 @@
 
 .property-description,
 .property-location,
-.property-type,
-.property-options,
-.booking-form {
+.property-type {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+}
+
+.booking-form,
+.property-options {
   margin-top: 20px;
 }
 
@@ -84,4 +55,63 @@
   margin: 5px;
   border-radius: 4px;
   font-size: 14px;
+}
+
+.property-description p,
+.property-location p,
+.property-type p {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #666;
+  margin-left: 20px;
+}
+
+.check-dates {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+mat-form-field {
+  width: 30%;
+}
+
+.form-button-container {
+  display: flex;
+}
+
+.booking-form {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+span {
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+/* Comments Section */
+.comments-section {
+  margin-top: 20px;
+}
+
+mat-card {
+  margin-bottom: 10px;
+}
+
+mat-card-title {
+  font-weight: bold;
+}
+
+mat-card-subtitle {
+  color: gray;
+}
+
+/* New Comment Form */
+.new-comment-form {
+  margin-top: 20px;
+}
+
+.new-comment-form mat-form-field {
+  width: 100%;
 }

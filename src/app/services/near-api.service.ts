@@ -120,10 +120,10 @@ export class NearApiService {
       args_base64: Buffer.from(JSON.stringify(args)).toString('base64'),
       finality: 'optimistic',
     });
-    
+
     //@ts-ignore
     const finalResult = JSON.parse(Buffer.from(res.result).toString());
-    console.log(`@viewMethod of '${method}' returned ${finalResult ? finalResult : 'nothing'}`);
+    console.log(`@viewMethod of '${method}' returned ${finalResult ? JSON.stringify(finalResult) : 'nothing'}`);
 
     return finalResult;
   }

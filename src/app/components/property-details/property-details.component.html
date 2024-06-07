@@ -13,22 +13,22 @@
     </c-carousel>
   </div>
   <div class="property-description">
-    <h2>Description</h2>
+    <span>Description:</span>
     <p>{{ property.description }}</p>
   </div>
 
   <div class="property-location">
-    <h3>Location</h3>
+    <span>Location:</span>
     <p>{{ property.location }}</p>
   </div>
 
   <div class="property-type">
-    <h3>Type</h3>
+    <span>Type:</span>
     <p>{{ property.type }}</p>
   </div>
 
   <div class="property-options">
-    <h3>Options</h3>
+    <h2>Options</h2>
     <div *ngFor="let option of property.options" class="option">
       {{ option }}
     </div>
@@ -36,22 +36,65 @@
 
   <div *ngIf="!isUserOwner" class="booking-form">
     <h3>Book this property</h3>
-    <form (ngSubmit)="onBook()">
+    <form [formGroup]="bookingForm" (ngSubmit)="onBook()">
       <mat-form-field appearance="fill">
         <mat-label>Check In</mat-label>
-        <input matInput [matDatepicker]="checkInPicker" [(ngModel)]="booking.checkIn" name="checkIn" required />
+        <input matInput [matDatepicker]="checkInPicker" formControlName="checkIn" />
         <mat-datepicker-toggle matSuffix [for]="checkInPicker"></mat-datepicker-toggle>
         <mat-datepicker #checkInPicker></mat-datepicker>
+        <mat-error *ngIf="bookingForm.get('checkIn').hasError('dateInPast')">
+          Check-in date cannot be in the past.
+        </mat-error>
+        <mat-error *ngIf="bookingForm.get('checkIn').hasError('required')"> Check-in date is required. </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>Check Out</mat-label>
-        <input matInput [matDatepicker]="checkOutPicker" [(ngModel)]="booking.checkOut" name="checkOut" required />
+        <input matInput [matDatepicker]="checkOutPicker" formControlName="checkOut" />
         <mat-datepicker-toggle matSuffix [for]="checkOutPicker"></mat-datepicker-toggle>
         <mat-datepicker #checkOutPicker></mat-datepicker>
+        <mat-error *ngIf="bookingForm.get('checkOut').hasError('dateInPast')">
+          Check-out date cannot be in the past.
+        </mat-error>
+        <mat-error *ngIf="bookingForm.get('checkOut').hasError('required')"> Check-out date is required. </mat-error>
+        <mat-error *ngIf="bookingForm.hasError('checkOutBeforeCheckIn')">
+          Check-out date must be after check-in date.
+        </mat-error>
       </mat-form-field>
 
       <button mat-raised-button color="primary" type="submit">Book</button>
     </form>
   </div>
+
+  <!-- New comment form -->
+  <div *ngIf="canLeaveComments" class="new-comment-form">
+    <h2>Share your experience about this booking</h2>
+    <form [formGroup]="commentForm" (ngSubmit)="onSubmitComment()">
+      <mat-form-field appearance="fill">
+        <mat-label>Comment</mat-label>
+        <textarea matInput formControlName="text" required></textarea>
+        <mat-error *ngIf="commentForm.get('text').hasError('required')"> Comment is required. </mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" [disabled]="commentForm.invalid">Submit</button>
+    </form>
+  </div>
+  <!-- Comments Section -->
+  <div class="comments-section" *ngIf="commentsLoaded">
+    <h2>Comments</h2>
+    <mat-card *ngIf="property.comments.length === 0">
+      <mat-card-content>No comments yet</mat-card-content>
+    </mat-card>
+    <div *ngIf="property.comments?.length">
+      <mat-card *ngFor="let comment of property.comments">
+        <mat-card-header>
+          <mat-card-title>{{ comment.accountId.slice(0, 2) }}..{{ comment.accountId.slice(-7) }}</mat-card-title>
+          <mat-card-subtitle>{{ comment.creationDate | date : "short" }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ comment.text }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
 </div>
+<app-loader></app-loader>

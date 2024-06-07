@@ -4,7 +4,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { RealEstateService } from '../../services/real-estate.service';
-import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -15,7 +14,6 @@ import { ThemeService } from '../../services/theme.service';
 })
 export class HeaderComponent {
   private realEstateService = inject(RealEstateService);
-  private themeService = inject(ThemeService);
   private router = inject(Router);
 
   isInitialized = false;
@@ -44,9 +42,5 @@ export class HeaderComponent {
     if (isToSignOut) {
       this.realEstateService.signOut();
     }
-  }
-
-  toggleUiTheme() {
-    this.themeService.toggleTheme();
   }
 }

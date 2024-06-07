@@ -8,7 +8,7 @@
 
       <mat-form-field appearance="fill">
         <mat-label>Description</mat-label>
-        <textarea matInput [(ngModel)]="property.description" name="description" required></textarea>
+        <textarea matInput [(ngModel)]="property.description" name="description"></textarea>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
@@ -32,12 +32,18 @@
       </mat-form-field>
 
       <mat-checkbox [(ngModel)]="property.isAvailable" name="isAvailable"> Available for booking </mat-checkbox>
-      <div><app-image-upload (imagesUploaded)="onImagesUploaded($event)" [existingImages]="existingImages"></app-image-upload></div>
+      <div>
+        <app-image-upload
+          (imagesUploaded)="onImagesUploaded($event)"
+          [existingImages]="existingImages"
+        ></app-image-upload>
+      </div>
       <br /><br />
-
-      <button mat-raised-button color="primary" type="submit">
-        {{ isEditMode ? "Update Property" : "Add Property" }}
-      </button>
+      <div class="submit-button-container">
+        <button mat-raised-button color="primary" type="submit">
+          {{ isEditMode ? "Update Property" : "Add Property" }}
+        </button>
+      </div>
     </form>
   </mat-card>
 </div>

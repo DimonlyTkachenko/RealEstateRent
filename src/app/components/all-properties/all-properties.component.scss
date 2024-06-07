@@ -20,10 +20,10 @@
 
 .filters mat-form-field {
   flex: 1 1 calc(25% - 16px);
-  margin-bottom: 8px; 
+  margin-bottom: 8px;
 }
 .filters mat-form-field .mat-form-field-wrapper {
-  padding-bottom: 0; 
+  padding-bottom: 0;
 }
 
 .rent-options {
@@ -34,12 +34,10 @@
 }
 
 .filter-buttons {
-  // display: flex;
+  position: absolute;
+  right: 0;
+  margin-right: 16px;
   gap: 8px;
-  // flex: 1 1 100%;
-  // justify-content: center;
-  margin-left: 2rem;
-  // margin-top: 16px;
 }
 
 .properties-list {

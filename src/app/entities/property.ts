@@ -1,3 +1,5 @@
+import  {Comment} from './comment';
+
 export type Property = {
   id: string;
   title: string;
@@ -5,11 +7,11 @@ export type Property = {
   type: string;
   location: string;
   options: string[] | string;
-  owner: string; // ref to account creator
+  owner: string;
   price: BigInt;
   images: string[];
   isAvailable: boolean;
   creationDate: Date;
-  comments: string[]; // reference to comments
-  datesBooked: string[]; // maybe zulu date without time
+  comments: Comment[]; // reference to Comment
+  datesBooked: string[];
 };
