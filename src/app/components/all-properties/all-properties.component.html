@@ -32,15 +32,15 @@
 
   <div class="properties-list">
     <mat-card *ngFor="let property of filteredProperties" class="property-card">
-      <img mat-card-image [src]="property.images[0]" alt="Property Image" class="property-image" />
-      <mat-card-content>
+      <img [routerLink]="['/property', property.id]" mat-card-image [src]="property.images[0]" alt="Property Image" class="property-image" />
+      <mat-card-content [routerLink]="['/property', property.id]">
         <h2>{{ property.title }}</h2>
         <p>{{ property.description | slice : 0 : 60 }}{{ property.description.length > 60 ? "..." : "" }}</p>
         <div class="property-location">
           <img src="../../../assets/location_icon.png" alt="Location Icon" class="location-icon" />
           <span>{{ property.location }}</span>
         </div>
-        <h3>{{ property.price.toLocaleString() }}/month</h3>
+        <h3>${{ property.price.toLocaleString() }}/day</h3>
       </mat-card-content>
       <mat-card-actions>
         <button mat-button color="primary" [routerLink]="['/property', property.id]">Details</button>

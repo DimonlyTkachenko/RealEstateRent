@@ -113,6 +113,6 @@ export class PropertyCreateComponent {
   navigateByRoute(route: string, timeout: number = 2000) {
     setTimeout(() => {
       this.router.navigate([route]);
-    }, 2500);
+    }, timeout);
   }
 }

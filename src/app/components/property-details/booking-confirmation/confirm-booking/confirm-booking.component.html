@@ -1,0 +1,18 @@
+<div class="confirmation-dialog">
+  <h2>Booking Confirmation</h2>
+  <div class="property-details">
+    <p><strong>Title:</strong> {{ data.propertyTitle }}</p>
+    <p><strong>Owner:</strong> {{ data.propertyOwner }}</p>
+    <p><strong>Price per day:</strong> ${{ data.propertyPrice }}</p>
+    <p><strong>Location:</strong> {{ data.propertyLocation }}</p>
+  </div>
+  <div class="booking-details">
+    <p>Booking from {{ data.checkIn | date }} to {{ data.checkOut | date }}, {{ data.totalDays }} full days</p>
+    <div class="separator-line"></div>
+    <p><strong>Total Cost:</strong> {{ data.totalCost }}</p>
+  </div>
+  <div class="actions">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="onConfirm()">Confirm</button>
+  </div>
+</div>

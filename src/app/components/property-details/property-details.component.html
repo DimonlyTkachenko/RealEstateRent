@@ -34,12 +34,23 @@
     </div>
   </div>
 
+  <div class="property-type">
+    <span>Price:</span>
+    <p>${{ property.price }}</p>
+  </div>
+
   <div *ngIf="!isUserOwner" class="booking-form">
     <h3>Book this property</h3>
     <form [formGroup]="bookingForm" (ngSubmit)="onBook()">
       <mat-form-field appearance="fill">
         <mat-label>Check In</mat-label>
-        <input matInput [matDatepicker]="checkInPicker" formControlName="checkIn" />
+        <input
+          [(ngModel)]="booking.checkIn"
+          matInput
+          [matDatepicker]="checkInPicker"
+          formControlName="checkIn"
+          [matDatepickerFilter]="checkInDateFilter"
+        />
         <mat-datepicker-toggle matSuffix [for]="checkInPicker"></mat-datepicker-toggle>
         <mat-datepicker #checkInPicker></mat-datepicker>
         <mat-error *ngIf="bookingForm.get('checkIn').hasError('dateInPast')">
@@ -50,7 +61,13 @@
 
       <mat-form-field appearance="fill">
         <mat-label>Check Out</mat-label>
-        <input matInput [matDatepicker]="checkOutPicker" formControlName="checkOut" />
+        <input
+          [(ngModel)]="booking.checkOut"
+          matInput
+          [matDatepicker]="checkOutPicker"
+          formControlName="checkOut"
+          [matDatepickerFilter]="checkOutDateFilter"
+        />
         <mat-datepicker-toggle matSuffix [for]="checkOutPicker"></mat-datepicker-toggle>
         <mat-datepicker #checkOutPicker></mat-datepicker>
         <mat-error *ngIf="bookingForm.get('checkOut').hasError('dateInPast')">

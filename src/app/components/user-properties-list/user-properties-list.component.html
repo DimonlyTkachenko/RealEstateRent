@@ -9,7 +9,11 @@
   <div class="list-container">
     <div class="user-properties-container">
       <div>
+        <h2>Hello {{ accountId }}</h2>
         <h2>List of your properties:</h2>
+      </div>
+      <div *ngIf="!userProperties || !userProperties.length">
+        <h3>No properties yet</h3>
       </div>
       <div *ngFor="let property of userProperties" class="property-card mat-elevation-z4">
         <img [src]="property.images[0]" alt="Property Image" class="property-image" />

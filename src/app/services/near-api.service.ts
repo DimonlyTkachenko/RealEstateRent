@@ -6,7 +6,7 @@ import { setupModal } from '@near-wallet-selector/modal-ui-js';
 import { setupMyNearWallet } from '@near-wallet-selector/my-near-wallet';
 import type { AccountState, FinalExecutionOutcome, Wallet, WalletSelector } from '@near-wallet-selector/core';
 import type { WalletSelectorModal } from '@near-wallet-selector/modal-ui-js';
-import { providers } from 'near-api-js';
+import { providers, utils } from 'near-api-js';
 
 export const CONTRACT_ID = 'onemorelastaccount2.testnet';
 const TGAS = '30000000000000';
@@ -150,7 +150,7 @@ export class NearApiService {
             methodName: method,
             args,
             gas,
-            deposit,
+            deposit: deposit,
           },
         },
       ],
@@ -161,10 +161,25 @@ export class NearApiService {
     return finalRes;
   }
 
+  public parseNearAmount(amount: string) {
+    return utils.format.parseNearAmount(amount.toString());
+  }
+
+  public async getTransactionResult(txhash: string): Promise<any> {
+    const walletSelector = await this.selector;
+    const { network } = walletSelector.options;
+    const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+
+    // Retrieve transaction result from the network
+    const transaction = await provider.txStatus(txhash, 'unnused');
+    return providers.getTransactionLastResult(transaction);
+  }
+
   // async callFunction(){
   //   this.account.
   // }
 }
+//http://localhost:4200/property/41?transactionHashes=GJAMFMQY1Z1ZVaQPiEABy176d4F3XAhukRgHbuk5fL8t
 
 function debug(title: string, obj?: any, isStringify = false): void {
   console.log(title);

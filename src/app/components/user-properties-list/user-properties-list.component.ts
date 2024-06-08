@@ -22,7 +22,7 @@ export class UserPropertiesListComponent {
   private snackBar = inject(MatSnackBar);
   private loaderService = inject(LoaderService);
   private dialog = inject(MatDialog);
-  private router = inject(Router);
+  accountId: string;
   userProperties: any[];
   isInitialized = false;
   isSignedIn: boolean;
@@ -30,6 +30,7 @@ export class UserPropertiesListComponent {
   ngOnInit(): void {
     this.realEstateService.isInitialized$.subscribe((initialized) => {
       this.isInitialized = initialized;
+      this.accountId = this.realEstateService.getUserAccountId();
     });
     this.realEstateService.isSignedIn$.subscribe((isSignedIn) => {
       this.isSignedIn = isSignedIn;
@@ -68,6 +69,5 @@ export class UserPropertiesListComponent {
     setTimeout(() => {
       window.location.reload();
     }, 2500);
-
   }
 }

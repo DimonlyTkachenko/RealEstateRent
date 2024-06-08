@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
+const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const path = require('path');
 
@@ -20,7 +21,7 @@ const storage = multer.diskStorage({
     cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+    cb(null, `${Date.now()}-${uuidv4()}`);
   },
 });
 

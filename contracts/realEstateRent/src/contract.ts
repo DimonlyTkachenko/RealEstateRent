@@ -52,12 +52,30 @@ class RealEstateNear {
   getCommentsByProperty({ id }): any[] {
     if (!id || !this.properties.get(id)) {
       near.log('@getCommentsByProperty: no property provided or it is not in storage!');
-      return [{ error: 'no property provided or it is not in storage!' }];
+      return [];
     }
     const property = this.properties.get(id);
-    near.log('getCommentsByProperty');
-    // near.log(property);
     return this.getObjectsByRef(property.comments, this.comments);
+  }
+
+  @view({})
+  getBookingsByUser({ id }): any[] {
+    if (!id || !this.users.get(id)) {
+      near.log('@getBookingsByUser: no user provided or it is not in storage!');
+      return [];
+    }
+    const user = this.users.get(id);
+    return this.getObjectsByRef(user.bookings, this.bookings);
+  }
+
+  @view({})
+  getBookingsByProperty({ id }): any[] {
+    if (!id || !this.properties.get(id)) {
+      near.log('@getBookingsByProperty: no property provided or it is not in storage!');
+      return [];
+    }
+    const property = this.properties.get(id);
+    return this.getObjectsByRef(property.bookings, this.bookings);
   }
 
   /**
@@ -102,6 +120,7 @@ class RealEstateNear {
         const user: User = this.createUserIfNotExist(callerAccount);
         // push new property
         User.addProperty(user, newProperty.id);
+        this.users.set(user.id, user);
       } else {
         return { status: 'ERROR', error: msg };
       }
@@ -171,7 +190,7 @@ class RealEstateNear {
     return { status: 'DELETED', error: '' };
   }
 
-  @call({})
+  @call({ payableFunction: true })
   createNewBooking(object: any): object {
     // near.log(`@addProperty: ${JSON.stringify(object)}`);
 
@@ -199,24 +218,25 @@ class RealEstateNear {
           object?.tenant,
           this.prepareDate(object?.startDate),
           this.prepareDate(object?.endDate),
-          BigInt(object?.bookedPrice || 0),
+          BigInt(object?.bookingTotal || 0),
           object?.fullBookedDays,
           this.prepareDate(object?.creationDate)
         );
 
-        existingProperty.bookings.push(newId);
+        Property.addBooking(existingProperty, newId);
 
         // add to the collection
         this.bookings.set(newId, newBooking);
         this.properties.set(existingProperty.id, existingProperty);
-        
+
         // handle payment
         const promise = near.promiseBatchCreate(existingProperty.owner);
         near.promiseBatchActionTransfer(promise, bookingCost);
-
+        near.log(`transfered ${bookingCost} near from ${callerAccount} to ${existingProperty.owner}`);
         // update user
         const user: User = this.createUserIfNotExist(callerAccount);
         User.addBooking(user, newId);
+        this.users.set(user.id, user);
       } else {
         return { status: 'ERROR', error: msg };
       }

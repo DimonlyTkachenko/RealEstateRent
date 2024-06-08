@@ -41,7 +41,7 @@ export class Property {
     this.isAvailable = isAvailable;
     this.creationDate = creationDate;
     this.comments = [];
-    this.bookings = []
+    this.bookings = [];
     this.images = images.length > IMAGES_LIMIT ? images.slice(0, IMAGES_LIMIT) : images;
   }
 
@@ -58,6 +58,14 @@ export class Property {
       msg += 'Owner is missing!';
     }
     return { result: !msg, msg };
+  }
+  public static addBooking(property: Property, bookingId: string): void {
+    if (!property.bookings) {
+      property.bookings = [];
+    }
+    if (!property.bookings.includes(bookingId)) {
+      property.bookings.push(bookingId);
+    }
   }
 
   // static addComment(property: Property, commentId: string) {

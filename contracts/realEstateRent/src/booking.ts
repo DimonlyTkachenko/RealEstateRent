@@ -6,7 +6,7 @@ export class Booking {
   endDate: Date;
   creationDate: Date;
   deleted: boolean;
-  bookedPrice: BigInt;
+  bookingTotal: BigInt;
   fullBookedDays: number;
 
   constructor(
@@ -15,7 +15,7 @@ export class Booking {
     tenant: string,
     startDate: Date,
     endDate: Date,
-    bookedPrice: BigInt,
+    bookingTotal: BigInt,
     fullBookedDays: number,
     creationDate: Date,
     deleted: boolean = false
@@ -25,7 +25,7 @@ export class Booking {
     this.tenant = tenant;
     this.startDate = startDate;
     this.endDate = endDate;
-    this.bookedPrice = bookedPrice;
+    this.bookingTotal = bookingTotal;
     this.deleted = deleted;
     this.creationDate = creationDate;
     this.fullBookedDays = fullBookedDays;
@@ -46,7 +46,7 @@ export class Booking {
     if (!booking?.endDate) {
       msg += 'End date is missing!';
     }
-    if (!booking?.bookedPrice) {
+    if (!booking?.bookingTotal) {
       msg += 'Price is missing!';
     }
     if (!booking?.tenant) {

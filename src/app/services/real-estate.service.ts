@@ -1,12 +1,15 @@
 import { Injectable, inject } from '@angular/core';
 import { NearApiService, CONTRACT_ID } from './near-api.service';
-import { BehaviorSubject, Observable, from } from 'rxjs';
+import { BehaviorSubject, Observable, from, firstValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RealEstateService {
+  private nearToUsdSubject: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  public nearToUsd$ = this.nearToUsdSubject.asObservable();
+
   private nearApiService = inject(NearApiService);
   private http = inject(HttpClient);
 
@@ -29,6 +32,7 @@ export class RealEstateService {
         });
       }
     });
+    this.getNearToDollarRate();
   }
   // authorization functions
   signIn() {
@@ -46,8 +50,43 @@ export class RealEstateService {
     return isSignedIn;
   }
 
+  // calls to contract
   getAllProperties(): Observable<any[]> {
     return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getAllAvailableProperties'));
+  }
+
+  getPropertyComments(propertyId: string) {
+    return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getCommentsByProperty', { id: propertyId }));
+  }
+
+  getPropertyById(id: string): Observable<object> {
+    return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getPropertyById', { id }));
+  }
+
+  getUserProperties(): Observable<any[]> {
+    const accountId = this.nearApiService.accountId;
+    return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getPropertiesByAccount', { accountId }));
+  }
+  async deleteProperty(object: { [prop: string]: any }): Promise<any> {
+    const accountId = this.nearApiService.accountId;
+    const args = { owner: accountId, ...object };
+
+    console.log('@deleteProperty: ' + JSON.stringify(args));
+
+    await this.nearApiService.callMethod({
+      contractId: CONTRACT_ID,
+      method: 'deleteProperty',
+      args,
+    });
+  }
+
+  getPropertyBookings(propertyId: string): Observable<any[]> {
+    return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getBookingsByProperty', { id: propertyId }));
+  }
+
+  getUserBookings(): Observable<any[]> {
+    const accountId = this.getUserAccountId();
+    return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getBookingsByUser', { id: accountId }));
   }
 
   async createNewProperty(object: { [prop: string]: any }): Promise<any> {
@@ -80,23 +119,6 @@ export class RealEstateService {
     });
   }
 
-  getUserProperties(): Observable<any[]> {
-    const accountId = this.nearApiService.accountId;
-    return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getPropertiesByAccount', { accountId }));
-  }
-  async deleteProperty(object: { [prop: string]: any }): Promise<any> {
-    const accountId = this.nearApiService.accountId;
-    const args = { owner: accountId, ...object };
-
-    console.log('@deleteProperty: ' + JSON.stringify(args));
-
-    await this.nearApiService.callMethod({
-      contractId: CONTRACT_ID,
-      method: 'deleteProperty',
-      args,
-    });
-  }
-
   async createComment(object: { [prop: string]: any }): Promise<any> {
     const accountId = this.getUserAccountId();
     const args = { accountId: accountId, creationDate: new Date().toISOString(), ...object };
@@ -110,12 +132,41 @@ export class RealEstateService {
     });
   }
 
-  getPropertyComments(propertyId: string) {
-    return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getCommentsByProperty', { id: propertyId }));
+  async createBooking(object: { [prop: string]: any }): Promise<any> {
+    const accountId = this.getUserAccountId();
+    const args = { tenant: accountId, creationDate: new Date().toISOString(), ...object };
+
+    console.log('@createBooking: ' + JSON.stringify(args));
+
+    await this.nearApiService.callMethod({
+      contractId: CONTRACT_ID,
+      method: 'createNewBooking',
+      args,
+      deposit: object['bookingTotal'],
+    });
+  }
+  getTranasctionResult(hash: string): Observable<any> {
+    return from(this.nearApiService.getTransactionResult(hash));
   }
 
-  getPropertyById(id: string): Observable<object> {
-    return from(this.nearApiService.viewMethod(CONTRACT_ID, 'getPropertyById', { id }));
+  async getNearToDollarRate() {
+    const executeFunc = async () => {
+      console.log('execute func..');
+      const response = await firstValueFrom(
+        this.http.get<{ url: string }>('https://api.coingecko.com/api/v3/simple/price?ids=near&vs_currencies=usd')
+      );
+      console.log('execute response');
+      console.log(response);
+      const mapping = response as any;
+      if (mapping['near']) {
+        const near2usd = Number(mapping['near']['usd'] || 0);
+        this.nearToUsdSubject.next(near2usd);
+      }
+    };
+
+    await executeFunc();
+
+    setInterval(executeFunc, 60 * 1000);
   }
 
   uploadImage(image: File): Observable<Object> {
@@ -123,7 +174,7 @@ export class RealEstateService {
 
     formData.append('image', image, image.name);
 
-    return this.http.post<{ url: string }>('http://localhost:3000/upload', formData);
+    return from(this.http.post<{ url: string }>('http://localhost:3000/upload', formData));
   }
 
   getUserAccountId(): string {
@@ -135,5 +186,8 @@ export class RealEstateService {
       const res = new Date(b[sortBy]).getTime() - new Date(a[sortBy]).getTime();
       return res;
     });
+  }
+  parseNearAmount(amount: string) {
+    return this.nearApiService.parseNearAmount(amount);
   }
 }

@@ -44,6 +44,7 @@ export class ImageUploadComponent implements OnChanges {
           src: url,
           status: 'ok',
         }));
+        this.imagesUploaded.emit(this.allImages);
         this.isEditMode = true;
         console.log('@ngOnChanges: allImages', this.allImages);
       }
