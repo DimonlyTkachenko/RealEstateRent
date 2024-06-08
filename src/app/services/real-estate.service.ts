@@ -145,18 +145,28 @@ export class RealEstateService {
       deposit: object['bookingTotal'],
     });
   }
+
+  async cancelBooking(bookingId: string): Promise<any> {
+    const args = { id: bookingId };
+
+    console.log('@cancelBooking: ' + JSON.stringify(args));
+
+    await this.nearApiService.callMethod({
+      contractId: CONTRACT_ID,
+      method: 'cancelBooking',
+      args,
+    });
+  }
+
   getTranasctionResult(hash: string): Observable<any> {
     return from(this.nearApiService.getTransactionResult(hash));
   }
 
   async getNearToDollarRate() {
     const executeFunc = async () => {
-      console.log('execute func..');
       const response = await firstValueFrom(
         this.http.get<{ url: string }>('https://api.coingecko.com/api/v3/simple/price?ids=near&vs_currencies=usd')
       );
-      console.log('execute response');
-      console.log(response);
       const mapping = response as any;
       if (mapping['near']) {
         const near2usd = Number(mapping['near']['usd'] || 0);

@@ -87,7 +87,7 @@ export class PropertyDetailsComponent implements OnInit {
       this.realEstateService.getPropertyById(propertyId).subscribe((data) => {
         this.property = data as Property;
         this.isUserOwner = this.realEstateService.getUserAccountId() === this.property.owner;
-        // TODO: update logic
+
         this.canLeaveComments = !this.isUserOwner;
         this.slides = this.property.images.map((el) => {
           return { title: 'No image', src: el };
@@ -95,7 +95,7 @@ export class PropertyDetailsComponent implements OnInit {
 
         this.realEstateService.getPropertyComments(this.property.id).subscribe((data) => {
           this.property.comments = this.realEstateService.sortByDate(data || []);
-          console.log(this.property);
+
           this.commentsLoaded = true;
         });
 
@@ -104,10 +104,10 @@ export class PropertyDetailsComponent implements OnInit {
         });
       });
 
+      // handle case when payable transaction is finished to retrieve result
       if (trnHash) {
-        this.loaderService.show()
+        this.loaderService.show();
         this.realEstateService.getTranasctionResult(trnHash).subscribe((data) => {
-          console.log(data);
           this.loaderService.hide();
           const msg = data.error ? data.error : 'Booking was successful!';
           this.snackBar.open(msg, 'Close', {
@@ -202,13 +202,12 @@ export class PropertyDetailsComponent implements OnInit {
           propertyLocation: this.property.location,
           checkIn: this.booking.checkIn,
           checkOut: this.booking.checkOut,
-          totalCost: `$${totalUsd} ≈ ${Number(totalNear).toFixed(3)} NEAR`,
+          totalCost: `$${totalUsd} ≈ ${Number(totalNear).toFixed(4)} NEAR`,
           totalDays,
         },
       });
       dialogRef.afterClosed().subscribe(async (result) => {
         if (result) {
-          console.log('Booking confirmed');
           this.loaderService.show();
           const res = await this.realEstateService.createBooking({
             propertyId: this.property.id,
@@ -216,10 +215,10 @@ export class PropertyDetailsComponent implements OnInit {
             endDate: this.booking.checkOut.toISOString(),
             bookingTotal: totalCost,
             fullBookedDays: totalDays,
+            totalUsd,
           });
           this.loaderService.hide();
         } else {
-          console.log('Booking cancelled');
         }
       });
     } else {
@@ -237,14 +236,16 @@ export class PropertyDetailsComponent implements OnInit {
       this.loaderService.show();
       const response = await this.realEstateService.createComment(newComment);
       this.loaderService.hide();
-      const msg = response?.error ? response?.error : 'Comment was posted.';
-      this.snackBar.open(msg, 'Close', {
-        duration: 2000,
-      });
+      if (response && response.status) {
+        const msg = response?.error ? response?.error : 'Comment was posted.';
+        this.snackBar.open(msg, 'Close', {
+          duration: 3000,
+        });
 
-      setTimeout(() => {
-        window.location.reload();
-      }, 2100);
+        setTimeout(() => {
+          window.location.reload();
+        }, 3100);
+      }
     }
   }
 

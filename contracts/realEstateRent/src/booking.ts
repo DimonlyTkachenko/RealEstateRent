@@ -7,6 +7,7 @@ export class Booking {
   creationDate: Date;
   deleted: boolean;
   bookingTotal: BigInt;
+  totalUsd: string;
   fullBookedDays: number;
 
   constructor(
@@ -16,6 +17,7 @@ export class Booking {
     startDate: Date,
     endDate: Date,
     bookingTotal: BigInt,
+    totalUsd: string,
     fullBookedDays: number,
     creationDate: Date,
     deleted: boolean = false
@@ -26,6 +28,7 @@ export class Booking {
     this.startDate = startDate;
     this.endDate = endDate;
     this.bookingTotal = bookingTotal;
+    this.totalUsd = totalUsd;
     this.deleted = deleted;
     this.creationDate = creationDate;
     this.fullBookedDays = fullBookedDays;

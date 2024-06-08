@@ -68,10 +68,15 @@ export class Property {
     }
   }
 
-  // static addComment(property: Property, commentId: string) {
-  //   if (!property.comments) {
-  //     property.comments = [];
-  //   }
-  //   property.comments.push(commentId);
-  // }
+  public static removeBooking(property: Property, bookingId: string): Property {
+    if (!property.bookings) {
+      property.bookings = [];
+      return;
+    }
+    const index = property.bookings.indexOf(bookingId);
+    if (index != -1) {
+      property.bookings.splice(index, 1);
+    }
+    return property;
+  }
 }

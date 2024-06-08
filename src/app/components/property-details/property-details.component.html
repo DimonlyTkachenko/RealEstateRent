@@ -41,7 +41,7 @@
 
   <div *ngIf="!isUserOwner" class="booking-form">
     <h3>Book this property</h3>
-    <form [formGroup]="bookingForm" (ngSubmit)="onBook()">
+    <form [formGroup]="bookingForm" id="booking-form" (ngSubmit)="onBook()">
       <mat-form-field appearance="fill">
         <mat-label>Check In</mat-label>
         <input
@@ -79,7 +79,10 @@
         </mat-error>
       </mat-form-field>
 
-      <button mat-raised-button color="primary" type="submit">Book</button>
+      <div>
+        <button mat-raised-button color="primary" type="submit">Book</button>
+      </div>
+
     </form>
   </div>
 

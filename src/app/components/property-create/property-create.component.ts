@@ -81,18 +81,18 @@ export class PropertyCreateComponent {
         this.loaderService.hide();
 
         this.snackBar.open(response?.error ? response?.error : 'Property was updated!', 'Close', {
-          duration: 2000,
+          duration: 3000,
         });
 
-        this.navigateByRoute('/my-properties', 2500);
+        this.navigateByRoute('/my-properties', 3100);
       } else {
         this.handleOptionsMapping();
         const response = await this.realEstateService.createNewProperty(this.property);
         this.loaderService.hide();
         this.snackBar.open(response?.error ? response?.error : 'Property was created!', 'Close', {
-          duration: 2000,
+          duration: 3000,
         });
-        this.navigateByRoute('/my-properties', 2500);
+        this.navigateByRoute('/my-properties', 3100);
       }
     } else {
       console.error('Form is invalid');

@@ -8,6 +8,12 @@
   border-radius: 8px;
 }
 
+#booking-form {
+  mat-form-field{
+    margin-right: 15px;
+  }
+}
+
 .carousel-container {
   max-width: 100%;
   display: flex;

@@ -118,9 +118,9 @@ class RealEstateNear {
 
         // update user
         const user: User = this.createUserIfNotExist(callerAccount);
-        // push new property
-        User.addProperty(user, newProperty.id);
-        this.users.set(user.id, user);
+
+        // push new property and update user
+        this.users.set(user.accountId, User.addProperty(user, newProperty.id));
       } else {
         return { status: 'ERROR', error: msg };
       }
@@ -170,7 +170,7 @@ class RealEstateNear {
 
   @call({})
   deleteProperty(object: any): object {
-    near.log(`@deleteProperty: ${JSON.stringify(object)}`);
+    //near.log(`@deleteProperty: ${JSON.stringify(object)}`);
     try {
       const callerAccount: AccountId = near.predecessorAccountId();
       const existingProperty = this.internalGetPropertyById(object?.id);
@@ -182,7 +182,8 @@ class RealEstateNear {
       const user = this.users.get(callerAccount);
 
       this.properties.remove(existingProperty.id);
-      User.removeProperty(user, existingProperty.id);
+
+      this.users.set(user.accountId, User.removeProperty(user, existingProperty.id));
     } catch (e) {
       return { status: 'ERROR', error: e.toString() };
     }
@@ -192,8 +193,6 @@ class RealEstateNear {
 
   @call({ payableFunction: true })
   createNewBooking(object: any): object {
-    // near.log(`@addProperty: ${JSON.stringify(object)}`);
-
     const bookingCost: bigint = near.attachedDeposit() as bigint;
 
     try {
@@ -219,6 +218,7 @@ class RealEstateNear {
           this.prepareDate(object?.startDate),
           this.prepareDate(object?.endDate),
           BigInt(object?.bookingTotal || 0),
+          object?.totalUsd,
           object?.fullBookedDays,
           this.prepareDate(object?.creationDate)
         );
@@ -229,14 +229,15 @@ class RealEstateNear {
         this.bookings.set(newId, newBooking);
         this.properties.set(existingProperty.id, existingProperty);
 
+        // update user
+        const user: User = this.createUserIfNotExist(callerAccount);
+        this.users.set(user.accountId, User.addBooking(user, newId));
+
         // handle payment
         const promise = near.promiseBatchCreate(existingProperty.owner);
         near.promiseBatchActionTransfer(promise, bookingCost);
+
         near.log(`transfered ${bookingCost} near from ${callerAccount} to ${existingProperty.owner}`);
-        // update user
-        const user: User = this.createUserIfNotExist(callerAccount);
-        User.addBooking(user, newId);
-        this.users.set(user.id, user);
       } else {
         return { status: 'ERROR', error: msg };
       }
@@ -244,6 +245,49 @@ class RealEstateNear {
       return { status: 'ERROR', error: e.msg + ' @ ' + e.stack };
     }
     return { status: 'CREATED', error: '' };
+  }
+
+  @call({})
+  cancelBooking(object: any): object {
+    const bookingId = object?.id;
+    try {
+      const callerAccount: AccountId = near.predecessorAccountId();
+
+      if (bookingId) {
+        const booking = this.bookings.get(bookingId);
+
+        if (!booking) {
+          return { status: 'ERROR', error: 'Booking does not exist!' };
+        }
+        // check if caller is the tenant
+        if (callerAccount !== booking.tenant) {
+          return { status: 'ERROR', error: 'Cancel denied. Caller account does not match the tenant!' };
+        }
+
+        const existingProperty = this.internalGetPropertyById(booking.propertyId);
+
+        if (!existingProperty) {
+          return { status: 'ERROR', error: 'Property in booking does not exist!' };
+        }
+
+        this.properties.set(existingProperty.id, Property.removeBooking(existingProperty, booking.id));
+
+        booking.deleted = true;
+        this.bookings.set(booking.id, booking);
+
+        // update user
+        const user: User = this.createUserIfNotExist(callerAccount);
+        this.users.set(user.accountId, User.removeBooking(user, bookingId));
+        // handle payment
+        const promise = near.promiseBatchCreate(booking.tenant);
+        near.promiseBatchActionTransfer(promise, booking.bookingTotal as any);
+      } else {
+        return { status: 'ERROR', error: 'Booking id is not provided!' };
+      }
+    } catch (e) {
+      return { status: 'ERROR', error: e.msg + ' @ ' + e.stack };
+    }
+    return { status: 'CANCELLED', error: '' };
   }
 
   @call({})

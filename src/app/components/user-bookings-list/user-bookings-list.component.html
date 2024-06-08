@@ -1,1 +1,29 @@
-<p>user-bookings-list works!</p>
+<div class="user-bookings-container">
+  <div>
+    <h2>List of your bookings:</h2>
+  </div>
+  <div *ngIf="!userBookings || !userBookings.length">
+    <h3>No bookings yet</h3>
+  </div>
+  <div *ngFor="let booking of userBookings" class="booking-card mat-elevation-z4">
+    <div class="booking-details">
+      <h2>Booking ID: {{ booking.id }}</h2>
+      <p>Start Date: {{ booking.startDate | date }}</p>
+      <p>End Date: {{ booking.endDate | date }}</p>
+      <p>Total Amount Paid: {{ booking.totalUsd | currency }}</p>
+      <div class="booking-actions">
+        <button mat-raised-button color="primary" [routerLink]="['/property', booking.propertyId]">See Property</button>
+        <button
+          *ngIf="bookingCanBeCancelled(booking.startDate)"
+          mat-raised-button
+          color="warn"
+          [disabled]="booking.canBeCancelled"
+          (click)="cancelBooking(booking)"
+        >
+          Cancel Booking
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<app-loader></app-loader>

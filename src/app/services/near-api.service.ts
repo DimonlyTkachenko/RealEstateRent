@@ -89,6 +89,7 @@ export class NearApiService {
     const _modal = setupModal(_selector, {
       contractId: CONTRACT_ID,
       description: 'Please select a wallet..',
+      theme: 'light',
     });
     const state = _selector.store.getState();
 
@@ -139,6 +140,11 @@ export class NearApiService {
     method: string;
     [prop: string]: any;
   }) {
+    // first check if user is signed in..
+    if (!(await this.isUserSignedIn())) {
+      this.signIn();
+      return;
+    }
     // Sign a transaction with the "FunctionCall" action
     const result = await this.wallet.signAndSendTransaction({
       signerId: this.accountId,
