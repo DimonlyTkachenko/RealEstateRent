@@ -73,7 +73,7 @@ export class RealEstateService {
 
     console.log('@deleteProperty: ' + JSON.stringify(args));
 
-    await this.nearApiService.callMethod({
+    return await this.nearApiService.callMethod({
       contractId: CONTRACT_ID,
       method: 'deleteProperty',
       args,
@@ -99,7 +99,7 @@ export class RealEstateService {
 
     console.log('@createNewProperty: ' + JSON.stringify(args));
 
-    await this.nearApiService.callMethod({
+    return await this.nearApiService.callMethod({
       contractId: CONTRACT_ID,
       method: 'addProperty',
       args,
@@ -112,7 +112,7 @@ export class RealEstateService {
 
     console.log('@updateProperty: ' + JSON.stringify(args));
 
-    await this.nearApiService.callMethod({
+    return await this.nearApiService.callMethod({
       contractId: CONTRACT_ID,
       method: 'updateProperty',
       args,
@@ -125,7 +125,7 @@ export class RealEstateService {
 
     console.log('@createComment: ' + JSON.stringify(args));
 
-    await this.nearApiService.callMethod({
+    return await this.nearApiService.callMethod({
       contractId: CONTRACT_ID,
       method: 'createComment',
       args,
@@ -138,7 +138,7 @@ export class RealEstateService {
 
     console.log('@createBooking: ' + JSON.stringify(args));
 
-    await this.nearApiService.callMethod({
+    return await this.nearApiService.callMethod({
       contractId: CONTRACT_ID,
       method: 'createNewBooking',
       args,
@@ -151,7 +151,7 @@ export class RealEstateService {
 
     console.log('@cancelBooking: ' + JSON.stringify(args));
 
-    await this.nearApiService.callMethod({
+    return await this.nearApiService.callMethod({
       contractId: CONTRACT_ID,
       method: 'cancelBooking',
       args,
