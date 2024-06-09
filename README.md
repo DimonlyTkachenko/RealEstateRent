@@ -4,8 +4,10 @@ This is real-estate renting application for tenants and landlords.
 Application is based on NEAR blockchain smart contract. Frontend is built using Angular 17
 
 ## Requirements
+
 Node.js ^18.13.0
 
 ## How to run it
-1. run `npm i --legacy-peer-deps` to install all dependencies
-2. Run `npm run start` for project to bootup. Navigate to `http://localhost:4200/`. This will start frontend and image upload server, contract is already deployed.
+
+1. run `npm i concurrently`
+2. run `npm run start` to install all dependencies and bootup the project. This will start frontend and image upload server, contract is already deployed.
