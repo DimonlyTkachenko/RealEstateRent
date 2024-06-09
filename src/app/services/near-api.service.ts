@@ -8,7 +8,7 @@ import type { AccountState, FinalExecutionOutcome, Wallet, WalletSelector } from
 import type { WalletSelectorModal } from '@near-wallet-selector/modal-ui-js';
 import { providers, utils } from 'near-api-js';
 
-export const CONTRACT_ID = 'onemorelastaccount2.testnet';
+export const CONTRACT_ID = 'realestaterentapp.testnet';
 const TGAS = '30000000000000';
 const NO_DEPOSIT = '0';
 
