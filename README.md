@@ -9,5 +9,5 @@ Node.js ^18.13.0
 
 ## How to run it
 
-1. run `npm i concurrently`
-2. run `npm run start` to install all dependencies and bootup the project. This will start frontend and image upload server, contract is already deployed.
+1. run `npm run install`. This will install dependencies for Angular frontend and Express backend server.
+2. run `npm run start` to bootup the project. This will start frontend and image upload server, contract is already deployed.

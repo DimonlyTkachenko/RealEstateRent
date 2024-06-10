@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "concurrently \"npm i && ng serve \" \"cd backend && npm i && node server.js\"",
+    "install": "npm i && cd backend && npm i",
+    "start": "concurrently \"ng serve -o \" \"cd backend && node server.js\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
