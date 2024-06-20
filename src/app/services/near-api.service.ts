@@ -89,7 +89,7 @@ export class NearApiService {
     const _modal = setupModal(_selector, {
       contractId: CONTRACT_ID,
       description: 'Please select a wallet..',
-      theme: 'light',
+      theme: 'auto',
     });
     const state = _selector.store.getState();
 
