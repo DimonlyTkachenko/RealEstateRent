@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
@@ -14,15 +14,12 @@ const port = 3000;
 // Enable CORS for any origin
 app.use(cors());
 
-// Initialize Dropbox
 const dropbox = new Dropbox({ accessToken: process.env.DROPBOX_ACCESS_TOKEN, fetch: fetch });
 
-// Set up multer for file uploads
-const storage = multer.memoryStorage(); // Store files in memory
+const storage = multer.memoryStorage();
 
 const upload = multer({ storage: storage });
 
-// Endpoint to receive image uploads
 app.post("/upload", upload.single("image"), async (req, res) => {
   if (!req.file) {
     return res.status(400).send("No file uploaded.");
